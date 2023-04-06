@@ -4,13 +4,17 @@ const Header = (props) => {
 
 const Content = (props) => {
 	const content = props.exercises.map((obj) => {
-		return (
-			<p>
-				{obj.part} {obj.exercises}
-			</p>
-		);
+		return <Part part={obj.part} exercises={obj.exercises} />;
 	});
 	return <>{content}</>;
+};
+
+const Part = (props) => {
+	return (
+		<p>
+			{props.part} {props.exercises}
+		</p>
+	);
 };
 
 const Total = (props) => {
