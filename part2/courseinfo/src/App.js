@@ -1,25 +1,73 @@
-import logo from './logo.svg';
-import './App.css';
+const Header = (props) => {
+  return <h1>{props.course}</h1>;
+};
 
-function App() {
+const Content = (props) => {
+  const content = props.parts.map((obj) => {
+    return <Part key={obj.id} name={obj.name} exercises={obj.exercises} />;
+  });
+  return <>{content}</>;
+};
+
+const Part = (props) => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <p>
+      {props.name} {props.exercises}
+    </p>
+  );
+};
+
+const Total = (props) => {
+  return (
+    <p>
+      Number of exercises{" "}
+      {props.exercises.reduce(
+        (previousValue, currentValue) => previousValue + currentValue,
+        0,
+      )}
+    </p>
+  );
+};
+
+const Course = ({ course }) => {
+  return (
+    <div>
+      <Header course={course.name} />
+      <Content parts={course.parts} />
+      <Total exercises={course.parts.map((obj) => obj.exercises)} />
     </div>
   );
-}
+};
+
+const App = () => {
+  const course = {
+    id: 1,
+    name: "Half Stack application development",
+    parts: [
+      {
+        name: "Fundamentals of React",
+        exercises: 10,
+        id: 1,
+      },
+      {
+        name: "Using props to pass data",
+        exercises: 7,
+        id: 2,
+      },
+      {
+        name: "State of a component",
+        exercises: 14,
+        id: 3,
+      },
+      {
+        name: "Additional topics",
+        exercises: 5,
+        id: 4,
+      },
+    ],
+  };
+
+  return <Course course={course} />;
+};
 
 export default App;
