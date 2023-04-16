@@ -1,14 +1,24 @@
-export default function Person({ persons, filter }) {
+export default function Persons({ persons, filter, handleDeleteClicked }) {
   return (
     <div>
       {persons
-        .filter((person) =>
+        .filter(person =>
           person.name.toLowerCase().includes(filter.toLowerCase()),
         )
-        .map((person) => (
-          <p key={person.name}>
-            {person.name} {person.number}
-          </p>
+        .map(person => (
+          <div key={person.name}>
+            <span>
+              {person.name} {person.number}
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                handleDeleteClicked(person.id);
+              }}
+            >
+              Delete
+            </button>
+          </div>
         ))}
     </div>
   );

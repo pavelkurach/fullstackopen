@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/label-has-associated-control */
 export default function PersonForm({
   newName,
   handleNameChange,
@@ -9,7 +10,8 @@ export default function PersonForm({
     <form>
       <div>
         <label>
-          name: <input value={newName} onChange={handleNameChange} />
+          name:{" "}
+          <input type="text" value={newName} onChange={handleNameChange} />
         </label>
       </div>
       <div>
