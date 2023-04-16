@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import Filter from "./Filter";
-import PersonForm from "./PersonForm";
-import Persons from "./Persons";
+import Filter from "./components/Filter";
+import PersonForm from "./components/PersonForm";
+import Persons from "./components/Persons";
 // eslint-disable-next-line import/no-named-as-default
-import phonebook from "./phonebook";
+import phonebook from "./utils/phonebook";
 
 function App() {
   const [persons, setPersons] = useState([]);
@@ -32,16 +32,40 @@ function App() {
   const handlePersonSubmit = e => {
     e.preventDefault();
     if (newName !== "" && newNumber !== "") {
-      if (
-        !persons
-          .map(person => person.name.toLowerCase())
-          .includes(newName.toLowerCase())
+      const existingPerson = persons.find(
+        person => person.name.toLowerCase() === newName.toLowerCase(),
+      );
+      if (!existingPerson) {
+        phonebook
+          .addPerson({
+            name: newName,
+            number: newNumber,
+          })
+          .then(newPerson => {
+            setPersons([...persons, newPerson]);
+            setNewName("");
+            setNewNumber("");
+          });
+      } else if (
+        window.confirm(
+          `${newName} is already added to phonebook, replace the old number with the new one?`,
+        )
       ) {
-        setPersons([...persons, { name: newName }]);
-        setNewName("");
-        setNewNumber("");
-      } else {
-        alert(`${newName} is already added to phonebook`);
+        phonebook
+          .updateNumber({
+            id: existingPerson.id,
+            name: newName,
+            number: newNumber,
+          })
+          .then(updatedPerson => {
+            setPersons(
+              persons.map(person =>
+                person.id === updatedPerson.id ? updatedPerson : person,
+              ),
+            );
+            setNewName("");
+            setNewNumber("");
+          });
       }
     }
   };
