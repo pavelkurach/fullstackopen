@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
+import { Notification, notificationStatus } from "./components/Notification";
 // eslint-disable-next-line import/no-named-as-default
 import phonebook from "./utils/phonebook";
 
@@ -10,6 +11,10 @@ function App() {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
+  const [notification, setNotification] = useState({
+    message: null,
+    status: null,
+  });
 
   useEffect(() => {
     phonebook.getAll().then(data => {
@@ -43,8 +48,32 @@ function App() {
           })
           .then(newPerson => {
             setPersons([...persons, newPerson]);
+            console.log(newName);
+            setNotification({
+              message: `Added ${newName} to the phonebook`,
+              status: notificationStatus.SUCCESS,
+            });
+            setTimeout(() => {
+              setNotification({
+                message: null,
+                status: null,
+              });
+            }, 2000);
             setNewName("");
             setNewNumber("");
+          })
+          .catch(error => {
+            console.error(error);
+            setNotification({
+              message: `Error`,
+              status: notificationStatus.ERROR,
+            });
+            setTimeout(() => {
+              setNotification({
+                message: null,
+                status: null,
+              });
+            }, 2000);
           });
       } else if (
         window.confirm(
@@ -63,8 +92,31 @@ function App() {
                 person.id === updatedPerson.id ? updatedPerson : person,
               ),
             );
+            setNotification({
+              message: `Updated ${newName}`,
+              status: notificationStatus.SUCCESS,
+            });
+            setTimeout(() => {
+              setNotification({
+                message: null,
+                status: null,
+              });
+            }, 2000);
             setNewName("");
             setNewNumber("");
+          })
+          .catch(error => {
+            console.error(error);
+            setNotification({
+              message: `Error`,
+              status: notificationStatus.ERROR,
+            });
+            setTimeout(() => {
+              setNotification({
+                message: null,
+                status: null,
+              });
+            }, 2000);
           });
       }
     }
@@ -74,17 +126,36 @@ function App() {
     if (
       window.confirm(`Delete ${persons.find(person => person.id === id).name}`)
     )
-      phonebook.deletePerson(id).then(response => {
-        if (response) {
-          const newPersons = persons.filter(person => person.id !== id);
-          setPersons(newPersons);
-        }
-      });
+      phonebook
+        .deletePerson(id)
+        .then(response => {
+          if (response) {
+            const newPersons = persons.filter(person => person.id !== id);
+            setPersons(newPersons);
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          setNotification({
+            message: `Error`,
+            status: notificationStatus.ERROR,
+          });
+          setTimeout(() => {
+            setNotification({
+              message: null,
+              status: null,
+            });
+          }, 2000);
+        });
   };
 
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification
+        message={notification.message}
+        status={notification.status}
+      />
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <br />
       <PersonForm

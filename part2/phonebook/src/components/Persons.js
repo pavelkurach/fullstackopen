@@ -2,7 +2,7 @@ export default function Persons({ persons, filter, handleDeleteClicked }) {
   return (
     <div>
       {persons
-        .filter(person =>
+        ?.filter(person =>
           person.name.toLowerCase().includes(filter.toLowerCase()),
         )
         .map(person => (
