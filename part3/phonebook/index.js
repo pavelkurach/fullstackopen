@@ -1,9 +1,15 @@
 const express = require("express");
-const { uuid } = require("uuidv4");
+const { v4: uuid } = require("uuid");
+const morgan = require("morgan");
 
 const app = express();
 
+morgan.token("body", req => {
+  return JSON.stringify(req.body);
+});
+
 app.use(express.json());
+app.use(morgan(":method :url :status :body - :response-time ms"));
 
 let persons = [
   {
