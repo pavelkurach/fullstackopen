@@ -16,6 +16,19 @@ function App() {
     status: null,
   });
 
+  const showNotification = (message, status) => {
+    setNotification({
+      message,
+      status,
+    });
+    setTimeout(() => {
+      setNotification({
+        message: null,
+        status: null,
+      });
+    }, 2000);
+  };
+
   useEffect(() => {
     phonebook.getAll().then(data => {
       setPersons(data);
@@ -48,32 +61,16 @@ function App() {
           })
           .then(newPerson => {
             setPersons([...persons, newPerson]);
-            console.log(newName);
-            setNotification({
-              message: `Added ${newName} to the phonebook`,
-              status: notificationStatus.SUCCESS,
-            });
-            setTimeout(() => {
-              setNotification({
-                message: null,
-                status: null,
-              });
-            }, 2000);
+            showNotification(
+              `Added ${newName} to the phonebook`,
+              notificationStatus.SUCCESS,
+            );
             setNewName("");
             setNewNumber("");
           })
           .catch(error => {
             console.error(error);
-            setNotification({
-              message: `Error`,
-              status: notificationStatus.ERROR,
-            });
-            setTimeout(() => {
-              setNotification({
-                message: null,
-                status: null,
-              });
-            }, 2000);
+            showNotification(`Error`, notificationStatus.ERROR);
           });
       } else if (
         window.confirm(
@@ -92,31 +89,13 @@ function App() {
                 person.id === updatedPerson.id ? updatedPerson : person,
               ),
             );
-            setNotification({
-              message: `Updated ${newName}`,
-              status: notificationStatus.SUCCESS,
-            });
-            setTimeout(() => {
-              setNotification({
-                message: null,
-                status: null,
-              });
-            }, 2000);
+            showNotification(`Updated ${newName}`, notificationStatus.SUCCESS);
             setNewName("");
             setNewNumber("");
           })
           .catch(error => {
             console.error(error);
-            setNotification({
-              message: `Error`,
-              status: notificationStatus.ERROR,
-            });
-            setTimeout(() => {
-              setNotification({
-                message: null,
-                status: null,
-              });
-            }, 2000);
+            showNotification(`Error`, notificationStatus.ERROR);
           });
       }
     }
@@ -136,16 +115,7 @@ function App() {
         })
         .catch(error => {
           console.error(error);
-          setNotification({
-            message: `Error`,
-            status: notificationStatus.ERROR,
-          });
-          setTimeout(() => {
-            setNotification({
-              message: null,
-              status: null,
-            });
-          }, 2000);
+          showNotification(`Error`, notificationStatus.ERROR);
         });
   };
 
