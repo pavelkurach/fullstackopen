@@ -30,9 +30,15 @@ function App() {
   };
 
   useEffect(() => {
-    phonebook.getAll().then(data => {
-      setPersons(data);
-    });
+    phonebook
+      .getAll()
+      .then(data => {
+        setPersons(data);
+      })
+      .catch(error => {
+        showNotification(`Could not fetch data`, notificationStatus.SUCCESS);
+        console.warn(error);
+      });
   }, []);
 
   const handleNameChange = e => {
