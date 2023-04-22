@@ -102,20 +102,20 @@ function App() {
   };
 
   const handleDeleteClicked = id => {
-    if (
-      window.confirm(`Delete ${persons.find(person => person.id === id).name}`)
-    )
+    const personName = persons.find(person => person.id === id).name;
+    if (window.confirm(`Delete ${personName}`))
       phonebook
         .deletePerson(id)
-        .then(response => {
-          if (response) {
-            const newPersons = persons.filter(person => person.id !== id);
-            setPersons(newPersons);
-          }
-        })
         .catch(error => {
-          console.error(error);
-          showNotification(`Error`, notificationStatus.ERROR);
+          console.warn(error);
+          showNotification(
+            `Information about ${personName} has already been deleted`,
+            notificationStatus.ERROR,
+          );
+        })
+        .finally(() => {
+          const newPersons = persons.filter(person => person.id !== id);
+          setPersons(newPersons);
         });
   };
 
