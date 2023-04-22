@@ -7,7 +7,7 @@ import { Notification, notificationStatus } from "./components/Notification";
 import phonebook from "./utils/phonebook";
 
 function App() {
-  const [persons, setPersons] = useState([]);
+  const [persons, setPersons] = useState(null);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [filter, setFilter] = useState("");
@@ -69,7 +69,7 @@ function App() {
             setNewNumber("");
           })
           .catch(error => {
-            console.error(error);
+            console.warn(error);
             showNotification(`Error`, notificationStatus.ERROR);
           });
       } else if (
@@ -94,7 +94,7 @@ function App() {
             setNewNumber("");
           })
           .catch(error => {
-            console.error(error);
+            console.warn(error);
             showNotification(`Error`, notificationStatus.ERROR);
           });
       }
