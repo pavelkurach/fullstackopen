@@ -1,28 +1,28 @@
-GET http://localhost:3001/api/persons/
+GET https://fso-phonebook-iopr.onrender.com/api/persons/
 
 ###
-GET http://localhost:3001/info/
+GET https://fso-phonebook-iopr.onrender.com/info/
 
 ###
-GET http://localhost:3001/api/persons/2
+GET https://fso-phonebook-iopr.onrender.com/api/persons/2
 
 ###
-DELETE http://localhost:3001/api/persons/2
+DELETE https://fso-phonebook-iopr.onrender.com/api/persons/2
 
 ###
-POST http://localhost:3001/api/persons
+POST https://fso-phonebook-iopr.onrender.com/api/persons
 Content-Type: application/json
 
 {
-    "name": "Arto Hellas",
+    "name": "Dan Petersons",
     "number": "+323434214"
 }
 
 ###
-GET http://localhost:3001/api/persons/323432341
+GET https://fso-phonebook-iopr.onrender.com/api/persons/323432341
 
 ###
-POST http://localhost:3001/api/persons/ 
+POST https://fso-phonebook-iopr.onrender.com/api/persons/ 
 content-type: application/json
 
 {

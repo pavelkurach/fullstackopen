@@ -1,6 +1,7 @@
 const express = require("express");
 const { v4: uuid } = require("uuid");
 const morgan = require("morgan");
+const cors = require("cors");
 
 const app = express();
 
@@ -10,6 +11,7 @@ morgan.token("body", req => {
 
 app.use(express.json());
 app.use(morgan(":method :url :status :body - :response-time ms"));
+app.use(cors());
 
 let persons = [
   {
