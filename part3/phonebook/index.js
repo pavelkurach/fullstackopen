@@ -12,6 +12,7 @@ morgan.token("body", req => {
 app.use(express.json());
 app.use(morgan(":method :url :status :body - :response-time ms"));
 app.use(cors());
+app.use(express.static("build"));
 
 let persons = [
   {
@@ -35,10 +36,6 @@ let persons = [
     number: "39-23-6423122",
   },
 ];
-
-app.get("/", (request, response) => {
-  response.send("<h1>Hello World!</h1>");
-});
 
 app.get("/info", (request, response) => {
   response.send(
