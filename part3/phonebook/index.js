@@ -2,6 +2,7 @@ const express = require("express");
 const { v4: uuid } = require("uuid");
 const morgan = require("morgan");
 const cors = require("cors");
+const Person = require("./models/person");
 
 const app = express();
 
@@ -14,29 +15,6 @@ app.use(morgan(":method :url :status :body - :response-time ms"));
 app.use(cors());
 app.use(express.static("build"));
 
-let persons = [
-  {
-    id: "1",
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: "2",
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: "3",
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: "4",
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
-
 app.get("/info", (request, response) => {
   response.send(
     `<div>
@@ -47,17 +25,21 @@ app.get("/info", (request, response) => {
 });
 
 app.get("/api/persons", (request, response) => {
-  response.json(persons);
+  Person.find({}).then(persons => {
+    response.json(persons);
+  });
 });
 
 app.get("/api/persons/:id", (request, response) => {
   const id = request.params.id;
-  const person = persons.find(person => person.id == id);
-  if (person) {
-    response.json(person);
-  } else {
-    response.status(404).end();
-  }
+  Person.findById(id)
+    .then(person => {
+      response.json(person);
+    })
+    .catch(error => {
+      response.status(404);
+      response.json({ error: `no user with id ${id}` });
+    });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -67,8 +49,8 @@ app.delete("/api/persons/:id", (request, response) => {
 });
 
 app.post("/api/persons/", (request, response) => {
-  _name = request.body?.name;
-  _number = request.body?.number;
+  const _name = request.body?.name;
+  const _number = request.body?.number;
 
   if (!_number) {
     response.status(400);
@@ -78,18 +60,27 @@ app.post("/api/persons/", (request, response) => {
   if (!_name) {
     response.status(400);
     response.json({ error: "name is missing" });
-  } else if (persons.find(person => person.name === _name)) {
-    response.status(400);
-    response.json({ error: "name must be unique" });
   } else {
-    newPerson = {
-      id: uuid(),
-      name: _name,
-      number: _number,
-    };
-    persons.push(newPerson);
-    response.status(201);
-    response.json(newPerson);
+    Person.findOne({ name: _name })
+      .then(person => {
+        if (person) {
+          response.status(400);
+          response.json({ error: "name must be unique" });
+        } else {
+          newPerson = new Person({
+            name: _name,
+            number: _number,
+          });
+          newPerson.save().then(person => {
+            response.status(201);
+            response.json(person);
+          });
+        }
+      })
+      .catch(error => {
+        response.status(404);
+        response.json({ error: String(error) });
+      });
   }
 });
 
