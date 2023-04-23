@@ -1,3 +1,6 @@
+/* eslint-disable no-console */
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-underscore-dangle */
 const mongoose = require("mongoose");
 require("dotenv").config();
 
@@ -7,7 +10,7 @@ const url = process.env.MONGODB_URI;
 
 mongoose
   .connect(url)
-  .then(result => {
+  .then(() => {
     console.log("connected to MongoDB");
   })
   .catch(error => {
@@ -15,8 +18,19 @@ mongoose
   });
 
 const personSchema = new mongoose.Schema({
-  name: String,
-  number: String,
+  name: {
+    type: String,
+    minLength: 3,
+    required: true,
+  },
+  number: {
+    type: String,
+    validate: {
+      validator: v => /[0-9]{2}[0-9]?-[0-9]+/.test(v) && v.length >= 8,
+      message: props => `${props.value} is not a valid phone number!`,
+    },
+    required: [true, "User phone number required"],
+  },
 });
 
 personSchema.set("toJSON", {

@@ -36,7 +36,7 @@ function App() {
         setPersons(data);
       })
       .catch(error => {
-        showNotification(`Could not fetch data`, notificationStatus.SUCCESS);
+        showNotification(`Could not fetch data`, notificationStatus.ERROR);
         console.warn(error);
       });
   }, []);
@@ -76,7 +76,10 @@ function App() {
           })
           .catch(error => {
             console.warn(error);
-            showNotification(`Error`, notificationStatus.ERROR);
+            showNotification(
+              error.response.data.error,
+              notificationStatus.ERROR,
+            );
           });
       } else if (
         window.confirm(
@@ -101,7 +104,10 @@ function App() {
           })
           .catch(error => {
             console.warn(error);
-            showNotification(`Error`, notificationStatus.ERROR);
+            showNotification(
+              error.response.data.error,
+              notificationStatus.ERROR,
+            );
           });
       }
     }
@@ -112,6 +118,12 @@ function App() {
     if (window.confirm(`Delete ${personName}`))
       phonebook
         .deletePerson(id)
+        .then(() => {
+          showNotification(
+            `Information about ${personName} has been already succesfully deleted`,
+            notificationStatus.SUCCESS,
+          );
+        })
         .catch(error => {
           console.warn(error);
           showNotification(
