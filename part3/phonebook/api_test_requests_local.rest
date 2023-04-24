@@ -4,19 +4,22 @@ GET http://localhost:3001/api/persons/
 GET http://localhost:3001/api/persons/2
 
 ###
-DELETE http://localhost:3001/api/persons/2
+GET http://localhost:3001/info
+
+###
+DELETE http://localhost:3001/api/persons/64452052ae6cce0579ec20ea
 
 ###
 POST http://localhost:3001/api/persons
 Content-Type: application/json
 
 {
-    "name": "Dan Petersons",
+    "title": "Dan Peters",
     "number": "+323434214"
 }
 
 ###
-GET http://localhost:3001/api/persons/323432341
+GET http://localhost:3001/api/persons/644530a64d672e354de57cd2
 
 ###
 POST http://localhost:3001/api/persons/ 
@@ -25,4 +28,12 @@ content-type: application/json
 {
     "name": "Arto Hellas",
     "number": "040-123456"
+}
+
+###
+PUT http://localhost:3001/api/persons/644521076656c87a702a8a78
+content-type: application/json
+
+{
+    "number": "0324"
 }
