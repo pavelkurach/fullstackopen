@@ -2,6 +2,21 @@ const bcrypt = require('bcrypt');
 const usersRouter = require('express').Router();
 const User = require('../models/user');
 
+class ValidationError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'ValidationError';
+  }
+}
+
+const validatePassword = password => {
+  if (password.length < 3) {
+    throw new ValidationError(
+      'User validation failed: password: Path `password` is shorter than the minimum allowed length (3).',
+    );
+  }
+};
+
 usersRouter.get('/', async (request, response) => {
   const users = await User.find({});
   response.json(users);
@@ -9,6 +24,8 @@ usersRouter.get('/', async (request, response) => {
 
 usersRouter.post('/', async (request, response) => {
   const { username, name, password } = request.body;
+
+  validatePassword(password);
 
   const saltRounds = 10;
   const passwordHash = await bcrypt.hash(password, saltRounds);
@@ -28,6 +45,7 @@ usersRouter.delete('/:id', async (request, response) => {
   response.status(204).end();
 });
 
+/*
 usersRouter.put('/:id', async (request, response) => {
   if (await User.findById(request.params.id)) {
     const updatedUser = await User.findByIdAndUpdate(
@@ -46,5 +64,6 @@ usersRouter.put('/:id', async (request, response) => {
     response.status(201).json(savedUser);
   }
 });
+*/
 
 module.exports = usersRouter;

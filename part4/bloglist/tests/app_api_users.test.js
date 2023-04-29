@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const supertest = require('supertest');
-const app = require('../app');
 const bcrypt = require('bcrypt');
+const app = require('../app');
 const User = require('../models/user');
 
 const api = supertest(app);
@@ -54,6 +54,52 @@ describe('when there is initially one user in db', () => {
       .expect('Content-Type', /application\/json/);
 
     expect(result.body.error).toContain('expected `username` to be unique');
+
+    const usersAtEnd = (await api.get('/api/users')).body;
+    expect(usersAtEnd).toEqual(usersAtStart);
+  });
+
+  test('creation fails with proper statuscode and message if username is too short', async () => {
+    const usersAtStart = await (await api.get('/api/users')).body;
+
+    const newUser = {
+      username: 'r',
+      name: 'R',
+      password: 'salainen',
+    };
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    expect(result.body.error).toContain(
+      `User validation failed: username: Path \`username\` (\`${newUser.username}\`) is shorter than the minimum allowed length (3).`,
+    );
+
+    const usersAtEnd = (await api.get('/api/users')).body;
+    expect(usersAtEnd).toEqual(usersAtStart);
+  });
+
+  test('creation fails with proper statuscode and message if password is too short', async () => {
+    const usersAtStart = await (await api.get('/api/users')).body;
+
+    const newUser = {
+      username: 'mluukkai',
+      name: 'Matti Luukkainen',
+      password: 's',
+    };
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/);
+
+    expect(result.body.error).toContain(
+      'User validation failed: password: Path `password` is shorter than the minimum allowed length (3).',
+    );
 
     const usersAtEnd = (await api.get('/api/users')).body;
     expect(usersAtEnd).toEqual(usersAtStart);
