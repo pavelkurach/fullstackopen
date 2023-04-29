@@ -1,5 +1,7 @@
+/* eslint-disable no-underscore-dangle */
 const blogsRouter = require('express').Router();
 const Blog = require('../models/blog');
+const User = require('../models/user');
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog.find({}).populate('user');
@@ -9,6 +11,9 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.post('/', async (request, response) => {
   const blog = new Blog({ ...request.body });
   const savedBlog = await blog.save();
+  const user = await User.findById(blog.user);
+  user.blogs = user.blogs.concat(savedBlog._id);
+  user.save();
   response.status(201).json(savedBlog);
 });
 
@@ -32,6 +37,9 @@ blogsRouter.put('/:id', async (request, response) => {
   } else {
     const blog = new Blog({ _id: request.params.id, ...request.body });
     const savedBlog = await blog.save();
+    const user = await User.findById(blog.user);
+    user.blogs = user.blogs.concat(savedBlog._id);
+    user.save();
     response.status(201).json(savedBlog);
   }
 });

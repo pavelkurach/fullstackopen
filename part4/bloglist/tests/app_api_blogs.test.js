@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 const mongoose = require('mongoose');
@@ -32,13 +33,11 @@ const blogs = [
     likes: 12,
   },
   {
-    _id: '5a422b891b54a676234d17fa',
     title: 'First class tests',
     author: 'Robert C. Martin',
     user: '5a422a851b54a676234d17f8',
     url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
     likes: 10,
-    __v: 0,
   },
   {
     title: 'TDD harms architecture',
@@ -73,6 +72,7 @@ beforeAll(async () => {
     username: 'root',
     password: passwordHash,
     name: 'root',
+    blogs: [],
   });
 
   await user.save();
@@ -80,8 +80,13 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await Blog.deleteMany({});
+  const user = await User.findById('5a422a851b54a676234d17f8');
+  user.blogs = [];
+  await user.save();
   for (const blog of blogs) {
-    await new Blog(blog).save();
+    const savedBlog = await new Blog(blog).save();
+    user.blogs = user.blogs.concat(savedBlog._id);
+    await user.save();
   }
 });
 
@@ -104,19 +109,17 @@ describe('fetching blogs', () => {
     const responseBlogs = response.body.map(blog => stripOfIdAndV(blog));
     expect(responseBlogs).toContainEqual({
       ...blogs[0],
-      user: { id: '5a422a851b54a676234d17f8', username: 'root', name: 'root' },
+      user: {
+        id: '5a422a851b54a676234d17f8',
+        username: 'root',
+        name: 'root',
+        blogs: response.body.map(blog => blog.id),
+      },
     });
   });
 });
 
 describe('saving blogs', () => {
-  beforeEach(async () => {
-    await Blog.deleteMany({});
-    for (const blog of blogs) {
-      await new Blog(blog).save();
-    }
-  });
-
   test('a valid blog can be added', async () => {
     const newBlog = {
       title: 'Angular patterns',
@@ -138,7 +141,12 @@ describe('saving blogs', () => {
     const responseBlogs = response.body.map(blog => stripOfIdAndV(blog));
     expect(responseBlogs).toContainEqual({
       ...newBlog,
-      user: { id: '5a422a851b54a676234d17f8', username: 'root', name: 'root' },
+      user: {
+        id: '5a422a851b54a676234d17f8',
+        username: 'root',
+        name: 'root',
+        blogs: response.body.map(blog => blog.id),
+      },
     });
   });
 
@@ -213,7 +221,15 @@ describe('deleting blogs', () => {
 
     const response = await api.get('/api/blogs');
     expect(response.body).toHaveLength(blogs.length);
-    expect(response.body).not.toContainEqual(newBlog);
+    expect(response.body).not.toContainEqual({
+      ...newBlog,
+      user: {
+        id: '5a422a851b54a676234d17f8',
+        username: 'root',
+        name: 'root',
+        blogs: response.body.map(blog => blog.id),
+      },
+    });
   });
 
   test('delete a non-existing note', async () => {
@@ -266,6 +282,7 @@ describe('updating blogs', () => {
           id: '5a422a851b54a676234d17f8',
           username: 'root',
           name: 'root',
+          blogs: response.body.map(blog => blog.id),
         },
       }),
     );
@@ -281,6 +298,8 @@ describe('updating blogs', () => {
       likes: 9,
     };
 
+    const blogsBefore = (await api.get('/api/blogs')).body;
+
     await api
       .put(`/api/blogs/${id}`)
       .send(newBlog)
@@ -293,7 +312,12 @@ describe('updating blogs', () => {
     const responseBlogs = response.body.map(blog => stripOfIdAndV(blog));
     expect(responseBlogs).toContainEqual({
       ...newBlog,
-      user: { id: '5a422a851b54a676234d17f8', username: 'root', name: 'root' },
+      user: {
+        id: '5a422a851b54a676234d17f8',
+        username: 'root',
+        name: 'root',
+        blogs: [...blogsBefore.map(blog => blog.id), id],
+      },
     });
   });
 });

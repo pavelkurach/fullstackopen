@@ -18,6 +18,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 0,
   },
+  blogs: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Blog',
+    },
+  ],
 });
 
 userSchema.set('toJSON', {
