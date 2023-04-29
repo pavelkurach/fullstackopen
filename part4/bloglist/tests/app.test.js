@@ -166,6 +166,7 @@ describe('deleting blogs', () => {
       title: 'Angular patterns',
       author: 'Michael Chan',
       url: 'https://angularpatterns.com/',
+      likes: 5,
     };
 
     await api
@@ -186,6 +187,67 @@ describe('deleting blogs', () => {
     await api.delete(`/api/blogs/${id}`).expect(204);
     const response = await api.get('/api/blogs');
     expect(response.body).toHaveLength(blogs.length);
+  });
+});
+
+describe('updating blogs', () => {
+  test('update an existing note', async () => {
+    const id = '5a422a851b54a676234d17f7';
+    const newBlog = {
+      _id: id,
+      title: 'Angular patterns',
+      author: 'Michael Chan',
+      url: 'https://angularpatterns.com/',
+      likes: 5,
+    };
+
+    const newBlogUpdated = {
+      title: 'Angular patterns 2 ed.',
+      likes: 15,
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    let response = await api.get('/api/blogs');
+    expect(response.body).toHaveLength(blogs.length + 1);
+
+    await api
+      .put(`/api/blogs/${id}`)
+      .send(newBlogUpdated)
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    response = await api.get('/api/blogs');
+    const responseBlogs = response.body.map(blog => stripOfIdAndV(blog));
+    expect(responseBlogs).toContainEqual(
+      stripOfIdAndV({ ...newBlog, ...newBlogUpdated }),
+    );
+  });
+
+  test('update a non-existing note', async () => {
+    const id = '5a422a851b54a676234d17f7';
+    const newBlog = {
+      title: 'Angular patterns',
+      author: 'Michael Chan',
+      url: 'https://angularpatterns.com/',
+      likes: 9,
+    };
+
+    await api
+      .put(`/api/blogs/${id}`)
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const response = await api.get('/api/blogs');
+
+    expect(response.body).toHaveLength(blogs.length + 1);
+    const responseBlogs = response.body.map(blog => stripOfIdAndV(blog));
+    expect(responseBlogs).toContainEqual(newBlog);
   });
 });
 
