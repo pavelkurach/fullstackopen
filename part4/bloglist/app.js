@@ -1,7 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
-
+require('express-async-errors');
 const unknownEndpoint = require('./utils/middleware').unknownEndpoint;
 const errorHandler = require('./utils/middleware').errorHandler;
 const blogsRouter = require('./controllers/blogs');

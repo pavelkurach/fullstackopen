@@ -128,6 +128,26 @@ describe('blogs api', () => {
     expect(responseNewBlog.likes).toBe(0);
   });
 
+  test('blogs without title are not accepted and return status code 400', async () => {
+    const newBlog = {
+      author: 'Michael Chan',
+      url: 'https://angularpatterns.com/',
+      likes: 9,
+    };
+
+    await api.post('/api/blogs').send(newBlog).expect(400);
+  });
+
+  test('blogs without url are not accepted and return status code 400', async () => {
+    const newBlog = {
+      title: 'Angular patterns',
+      author: 'Michael Chan',
+      likes: 9,
+    };
+
+    await api.post('/api/blogs').send(newBlog).expect(400);
+  });
+
   afterAll(async () => {
     await Blog.deleteMany({});
     await mongoose.connection.close();
