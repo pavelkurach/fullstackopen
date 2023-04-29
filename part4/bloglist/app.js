@@ -1,10 +1,12 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const morgan = require('morgan');
 const cors = require('cors');
 require('express-async-errors');
 const unknownEndpoint = require('./utils/middleware').unknownEndpoint;
 const errorHandler = require('./utils/middleware').errorHandler;
 const blogsRouter = require('./controllers/blogs');
+const usersRouter = require('./controllers/users');
 
 const app = express();
 
@@ -15,8 +17,20 @@ morgan.token('body', req => JSON.stringify(req.body));
 app.use(morgan(':method :url :status :body - :response-time ms'));
 
 app.use('/api/blogs', blogsRouter);
+app.use('/api/users', usersRouter);
 
 app.use(unknownEndpoint);
 app.use(errorHandler);
+
+const url = require('./utils/config').MONGODB_URI;
+
+mongoose
+  .connect(url)
+  .then(() => {
+    console.log('connected to MongoDB');
+  })
+  .catch(error => {
+    console.log('error connecting to MongoDB:', error.message);
+  });
 
 module.exports = app;
