@@ -108,6 +108,26 @@ describe('blogs api', () => {
     expect(response.body[0].id).toBeDefined();
   });
 
+  test('likes defaults to 0', async () => {
+    const id = '5a422a851b54a676234d17f7';
+    const newBlog = {
+      _id: id,
+      title: 'Angular patterns',
+      author: 'Michael Chan',
+      url: 'https://angularpatterns.com/',
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const response = await api.get('/api/blogs');
+    const responseNewBlog = response.body.find(blog => blog.id === id);
+    expect(responseNewBlog.likes).toBe(0);
+  });
+
   afterAll(async () => {
     await Blog.deleteMany({});
     await mongoose.connection.close();
