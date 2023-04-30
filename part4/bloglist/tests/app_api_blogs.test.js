@@ -4,6 +4,7 @@
 const mongoose = require('mongoose');
 const supertest = require('supertest');
 const bcrypt = require('bcrypt');
+require('dotenv').config();
 const app = require('../app');
 const Blog = require('../models/blog');
 const User = require('../models/user');
@@ -66,7 +67,7 @@ const stripOfIdAndV = ({ title, author, user, url, likes }) => ({
 beforeAll(async () => {
   await User.deleteMany({});
 
-  const passwordHash = await bcrypt.hash('secret', 10);
+  const passwordHash = await bcrypt.hash('root', 10);
   const user = new User({
     _id: '5a422a851b54a676234d17f8',
     username: 'root',
@@ -89,6 +90,14 @@ beforeEach(async () => {
     await user.save();
   }
 });
+
+const getRootToken = async () => {
+  const response = await api.post('/api/login').send({
+    username: 'root',
+    password: 'root',
+  });
+  return response.body.token;
+};
 
 describe('fetching blogs', () => {
   test('blogs are returned as json', async () => {
@@ -124,13 +133,15 @@ describe('saving blogs', () => {
     const newBlog = {
       title: 'Angular patterns',
       author: 'Michael Chan',
-      user: '5a422a851b54a676234d17f8',
       url: 'https://angularpatterns.com/',
       likes: 9,
     };
 
+    const token = await getRootToken();
+
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
@@ -150,6 +161,27 @@ describe('saving blogs', () => {
     });
   });
 
+  test('a blog cannot be added if token is invalid', async () => {
+    const newBlog = {
+      title: 'Angular patterns',
+      author: 'Michael Chan',
+      url: 'https://angularpatterns.com/',
+      likes: 9,
+    };
+
+    const token = '000';
+
+    await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .send(newBlog)
+      .expect(400);
+
+    const response = await api.get('/api/blogs');
+
+    expect(response.body).toHaveLength(blogs.length);
+  });
+
   test('unique identifier property is named id, not _id', async () => {
     const response = await api.get('/api/blogs');
     expect(response.body[0].id).toBeDefined();
@@ -161,12 +193,14 @@ describe('saving blogs', () => {
       _id: id,
       title: 'Angular patterns',
       author: 'Michael Chan',
-      user: '5a422a851b54a676234d17f8',
       url: 'https://angularpatterns.com/',
     };
 
+    const token = await getRootToken();
+
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
@@ -179,23 +213,33 @@ describe('saving blogs', () => {
   test('blogs without title are not accepted and return status code 400', async () => {
     const newBlog = {
       author: 'Michael Chan',
-      user: '5a422a851b54a676234d17f8',
       url: 'https://angularpatterns.com/',
       likes: 9,
     };
 
-    await api.post('/api/blogs').send(newBlog).expect(400);
+    const token = await getRootToken();
+
+    await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .send(newBlog)
+      .expect(400);
   });
 
   test('blogs without url are not accepted and return status code 400', async () => {
     const newBlog = {
       title: 'Angular patterns',
       author: 'Michael Chan',
-      user: '5a422a851b54a676234d17f8',
       likes: 9,
     };
 
-    await api.post('/api/blogs').send(newBlog).expect(400);
+    const token = await getRootToken();
+
+    await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .send(newBlog)
+      .expect(400);
   });
 });
 
@@ -206,18 +250,23 @@ describe('deleting blogs', () => {
       _id: id,
       title: 'Angular patterns',
       author: 'Michael Chan',
-      user: '5a422a851b54a676234d17f8',
       url: 'https://angularpatterns.com/',
       likes: 5,
     };
 
+    const token = await getRootToken();
+
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
-    await api.delete(`/api/blogs/${id}`).expect(204);
+    await api
+      .delete(`/api/blogs/${id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(204);
 
     const response = await api.get('/api/blogs');
     expect(response.body).toHaveLength(blogs.length);
@@ -232,9 +281,70 @@ describe('deleting blogs', () => {
     });
   });
 
+  test('cannot delete an existing note if token is invalid', async () => {
+    const id = '5a422a851b54a676234d17f7';
+    const newBlog = {
+      _id: id,
+      title: 'Angular patterns',
+      author: 'Michael Chan',
+      url: 'https://angularpatterns.com/',
+      likes: 5,
+    };
+
+    const passwordHash = await bcrypt.hash('temp', 10);
+    const user = new User({
+      username: 'temp',
+      password: passwordHash,
+      name: 'temp',
+      blogs: [],
+    });
+    await user.save();
+
+    const invalidToken = (
+      await api.post('/api/login').send({
+        username: 'temp',
+        password: 'temp',
+      })
+    ).body.token;
+
+    const token = await getRootToken();
+
+    await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    await api
+      .delete(`/api/blogs/${id}`)
+      .set('Authorization', `Bearer ${invalidToken}`)
+      .expect(401);
+
+    const response = await api.get('/api/blogs');
+    expect(response.body).toHaveLength(blogs.length + 1);
+    expect(response.body).toContainEqual({
+      title: 'Angular patterns',
+      author: 'Michael Chan',
+      url: 'https://angularpatterns.com/',
+      likes: 5,
+      id,
+      user: {
+        id: '5a422a851b54a676234d17f8',
+        username: 'root',
+        name: 'root',
+        blogs: response.body.map(blog => blog.id),
+      },
+    });
+  });
+
   test('delete a non-existing note', async () => {
     const id = '5a422a851b54a676234d17f7';
-    await api.delete(`/api/blogs/${id}`).expect(204);
+    const token = await getRootToken();
+    await api
+      .delete(`/api/blogs/${id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(204);
     const response = await api.get('/api/blogs');
     expect(response.body).toHaveLength(blogs.length);
   });
@@ -247,7 +357,6 @@ describe('updating blogs', () => {
       _id: id,
       title: 'Angular patterns',
       author: 'Michael Chan',
-      user: '5a422a851b54a676234d17f8',
       url: 'https://angularpatterns.com/',
       likes: 5,
     };
@@ -256,9 +365,11 @@ describe('updating blogs', () => {
       title: 'Angular patterns 2 ed.',
       likes: 15,
     };
+    const token = await getRootToken();
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
@@ -268,6 +379,7 @@ describe('updating blogs', () => {
 
     await api
       .put(`/api/blogs/${id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlogUpdated)
       .expect(200)
       .expect('Content-Type', /application\/json/);
@@ -293,15 +405,16 @@ describe('updating blogs', () => {
     const newBlog = {
       title: 'Angular patterns',
       author: 'Michael Chan',
-      user: '5a422a851b54a676234d17f8',
       url: 'https://angularpatterns.com/',
       likes: 9,
     };
 
     const blogsBefore = (await api.get('/api/blogs')).body;
+    const token = await getRootToken();
 
     await api
       .put(`/api/blogs/${id}`)
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);

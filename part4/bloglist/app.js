@@ -5,8 +5,10 @@ const cors = require('cors');
 require('express-async-errors');
 const unknownEndpoint = require('./utils/middleware').unknownEndpoint;
 const errorHandler = require('./utils/middleware').errorHandler;
+const tokenExtractor = require('./utils/middleware').tokenExtractor;
 const blogsRouter = require('./controllers/blogs');
 const usersRouter = require('./controllers/users');
+const loginRouter = require('./controllers/login');
 
 const app = express();
 
@@ -15,9 +17,11 @@ app.use(express.json());
 
 morgan.token('body', req => JSON.stringify(req.body));
 app.use(morgan(':method :url :status :body - :response-time ms'));
+app.use(tokenExtractor);
 
 app.use('/api/blogs', blogsRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/login', loginRouter);
 
 app.use(unknownEndpoint);
 app.use(errorHandler);

@@ -1,0 +1,28 @@
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+    "username": "root",
+    "password": "root"
+}
+
+###
+POST http://localhost:3003/api/login
+Content-Type: application/json
+
+{
+    "username": "root",
+    "password": "root"
+}
+
+###
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InJvb3QiLCJpZCI6IjY0NGUzYjBhOWY4ZjEyOTdhNDM5MjliNSIsImlhdCI6MTY4Mjg0OTA2OH0._HKbkhDiEleKFpxzyu6FufBtIUiEC7ptJ3h1_rIaJO8
+
+{
+    "title": "Angular patterns",
+    "author": "Michael Chan",
+    "url": "https://angularpatterns.com/",
+    "likes": 9
+}
