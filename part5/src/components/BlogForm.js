@@ -2,7 +2,7 @@ import { useState } from 'react';
 import blogService from '../services/blogs';
 import { notificationStatus } from './Notification';
 
-const BlogForm = ({ token, showNotification, toggableRef }) => {
+const BlogForm = ({ token, showNotification, toggableRef, getAllBlogs }) => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
@@ -15,6 +15,7 @@ const BlogForm = ({ token, showNotification, toggableRef }) => {
         `A new blog ${newBlog.title} by ${newBlog.author} is added`,
         notificationStatus.SUCCESS,
       );
+      getAllBlogs();
     } catch (e) {
       showNotification('Error', notificationStatus.ERROR);
       console.error(e);
@@ -32,7 +33,7 @@ const BlogForm = ({ token, showNotification, toggableRef }) => {
         <label onSubmit={handleBlogFormSubmit}>
           title:
           <input
-            type='text'
+            type="text"
             value={title}
             onChange={({ target }) => setTitle(target.value)}
           />
@@ -42,7 +43,7 @@ const BlogForm = ({ token, showNotification, toggableRef }) => {
         <label>
           author:
           <input
-            type='text'
+            type="text"
             value={author}
             onChange={({ target }) => setAuthor(target.value)}
           />
@@ -52,14 +53,14 @@ const BlogForm = ({ token, showNotification, toggableRef }) => {
         <label>
           url:
           <input
-            type='text'
+            type="text"
             value={url}
             onChange={({ target }) => setUrl(target.value)}
           />
         </label>
       </div>
       <div>
-        <button type='submit'>create</button>
+        <button type="submit">create</button>
       </div>
     </form>
   );

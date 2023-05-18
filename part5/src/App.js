@@ -32,14 +32,15 @@ const App = () => {
     }, 2000);
   };
 
-  useEffect(() => {
+  const getAllBlogs = () => {
     blogService.getAll().then(blogs => setBlogs(blogs));
-  }, []);
+  }
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistAppUser');
     if (loggedUserJSON) {
       setUser(JSON.parse(loggedUserJSON));
+      getAllBlogs();
     }
   }, []);
 
@@ -57,6 +58,7 @@ const App = () => {
         'loggedBloglistAppUser',
         JSON.stringify(user),
       );
+      getAllBlogs();
     } catch (e) {
       showNotification('Wrong credentials', notificationStatus.ERROR);
       console.error(e);
@@ -87,9 +89,12 @@ const App = () => {
 
   const blogForm = () => (
       <Toggable buttonLabel={'new blog'} ref={blogFormRef}>
-        <BlogForm token={user.token}
-                  showNotification={showNotification}
-                  toggableRef={blogFormRef}/>
+        <BlogForm
+          token={user.token}
+          showNotification={showNotification}
+          toggableRef={blogFormRef}
+          getAllBlogs={getAllBlogs}
+        />
       </Toggable>
     )
   ;
