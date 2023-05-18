@@ -4,6 +4,7 @@ import LoginForm from './components/LoginForm';
 import blogService from './services/blogs';
 import { Notification, notificationStatus } from './components/Notification';
 import loginService from './services/login';
+import BlogForm from './components/BlogForm';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -55,6 +56,7 @@ const App = () => {
       );
     } catch (e) {
       showNotification('Wrong credentials', notificationStatus.ERROR);
+      console.error(e);
     } finally {
       setUsername('');
       setPassword('');
@@ -80,6 +82,10 @@ const App = () => {
     );
   };
 
+  const blogForm = () => (
+    <BlogForm token={user.token} showNotification={showNotification} />
+  );
+
   return (
     <div>
       <Notification
@@ -88,6 +94,7 @@ const App = () => {
       />
       <h2>blogs</h2>
       {user === null ? loginForm() : loggedInUser()}
+      {user !== null && blogForm()}
       {user !== null && blogs.map(blog => <Blog key={blog.id} blog={blog} />)}
     </div>
   );
