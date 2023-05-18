@@ -2,7 +2,7 @@ import { useState } from 'react';
 import blogService from '../services/blogs';
 import { notificationStatus } from './Notification';
 
-const BlogForm = ({ token, showNotification }) => {
+const BlogForm = ({ token, showNotification, toggableRef }) => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
@@ -19,6 +19,7 @@ const BlogForm = ({ token, showNotification }) => {
       showNotification('Error', notificationStatus.ERROR);
       console.error(e);
     } finally {
+      toggableRef.current.toggleVisibility();
       setTitle('');
       setAuthor('');
       setUrl('');
