@@ -32,11 +32,27 @@ const App = () => {
     blogService.getAll().then(blogs => setBlogs(blogs));
   }, []);
 
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedBloglistAppUser');
+    if (loggedUserJSON) {
+      setUser(JSON.parse(loggedUserJSON));
+    }
+  }, []);
+
+  const handleLogout = () => {
+    setUser(null);
+    window.localStorage.removeItem('loggedBloglistAppUser');
+  };
+
   const handleLogin = async event => {
     event.preventDefault();
     try {
       const user = await loginService.login({ username, password });
       setUser(user);
+      window.localStorage.setItem(
+        'loggedBloglistAppUser',
+        JSON.stringify(user),
+      );
     } catch (e) {
       showNotification('Wrong credentials', notificationStatus.ERROR);
     } finally {
@@ -56,7 +72,12 @@ const App = () => {
   );
 
   const loggedInUser = () => {
-    return <div>{user.name} is logged in.</div>;
+    return (
+      <div>
+        {user.name} is logged in.
+        <button onClick={handleLogout}>logout</button>
+      </div>
+    );
   };
 
   return (
