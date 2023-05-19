@@ -27,7 +27,9 @@ function Notification({ message, status }) {
 
   return (
     <>
-      <div style={style}>{message}</div>
+      <div style={style} className={status}>
+        {message}
+      </div>
       <br />
     </>
   );

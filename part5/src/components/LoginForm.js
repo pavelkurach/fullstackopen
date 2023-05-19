@@ -21,7 +21,9 @@ export default function LoginForm({
           <input type='password' value={password} onChange={setPassword} />
         </label>
       </div>
-      <button type='submit'>Login</button>
+      <button type='submit' id='login-button'>
+        Login
+      </button>
     </form>
   );
 }
