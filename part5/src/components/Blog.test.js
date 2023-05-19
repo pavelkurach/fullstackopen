@@ -4,22 +4,22 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Blog from './Blog';
 
+const blog = {
+  title: 'title',
+  author: 'author',
+  user: {
+    username: 'user1',
+    name: 'User 1',
+    blogs: ['64675abdf02617c94078174b'],
+    id: '64675a0d0531660cfe1e6d6d',
+  },
+  url: 'url.com',
+  likes: 2,
+  id: '64675abdf02617c94078174b',
+};
+
 // eslint-disable-next-line quotes
 test("blog renders the blog's title and author, but does not render its URL or number of likes by default", () => {
-  const blog = {
-    title: 'title',
-    author: 'author',
-    user: {
-      username: 'user1',
-      name: 'User 1',
-      blogs: ['64675abdf02617c94078174b'],
-      id: '64675a0d0531660cfe1e6d6d',
-    },
-    url: 'url.com',
-    likes: 2,
-    id: '64675abdf02617c94078174b',
-  };
-
   const { container } = render(<Blog blog={blog} />);
   const noteDiv = container.querySelector('.blog');
   expect(noteDiv).toBeDefined();
@@ -31,19 +31,6 @@ test("blog renders the blog's title and author, but does not render its URL or n
 
 // eslint-disable-next-line quotes
 test("the blog's URL and number of likes are shown when the button controlling the shown details has been clicked", async () => {
-  const blog = {
-    title: 'title',
-    author: 'author',
-    user: {
-      username: 'user1',
-      name: 'User 1',
-      blogs: ['64675abdf02617c94078174b'],
-      id: '64675a0d0531660cfe1e6d6d',
-    },
-    url: 'url.com',
-    likes: 2,
-    id: '64675abdf02617c94078174b',
-  };
   const user = userEvent.setup();
   const { container } = render(<Blog blog={blog} />);
   const noteDiv = container.querySelector('.blog');
@@ -52,4 +39,19 @@ test("the blog's URL and number of likes are shown when the button controlling t
   await user.click(button);
   expect(noteDiv).toHaveTextContent(blog.url);
   expect(noteDiv).toHaveTextContent(blog.likes);
+});
+
+test('if the like button is clicked twice, the event handler the component received as props is called twice', async () => {
+  const mockLikeHandler = jest.fn();
+  const user = userEvent.setup();
+  render(<Blog blog={blog} handleLike={mockLikeHandler} />);
+
+  const viewButton = screen.getByText('view');
+  await user.click(viewButton);
+
+  const likeButton = screen.getByText('like');
+  await user.click(likeButton);
+  await user.click(likeButton);
+
+  expect(mockLikeHandler.mock.calls).toHaveLength(2);
 });
