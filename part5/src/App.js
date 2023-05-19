@@ -34,7 +34,7 @@ const App = () => {
 
   const getAllBlogs = () => {
     blogService.getAll().then(blogs => setBlogs(blogs));
-  }
+  };
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistAppUser');
@@ -88,17 +88,15 @@ const App = () => {
   };
 
   const blogForm = () => (
-      <Toggable buttonLabel={'new blog'} ref={blogFormRef}>
-        <BlogForm
-          token={user.token}
-          showNotification={showNotification}
-          toggableRef={blogFormRef}
-          getAllBlogs={getAllBlogs}
-        />
-      </Toggable>
-    )
-  ;
-
+    <Toggable buttonLabel={'new blog'} ref={blogFormRef}>
+      <BlogForm
+        token={user.token}
+        showNotification={showNotification}
+        toggableRef={blogFormRef}
+        getAllBlogs={getAllBlogs}
+      />
+    </Toggable>
+  );
   return (
     <div>
       <Notification
@@ -108,7 +106,15 @@ const App = () => {
       <h2>blogs</h2>
       {user === null ? loginForm() : loggedInUser()}
       {user !== null && blogForm()}
-      {user !== null && blogs.map(blog => <Blog key={blog.id} blog={blog}/>)}
+      {user !== null &&
+        blogs.map(blog => (
+          <Blog
+            key={blog.id}
+            blog={blog}
+            token={user.token}
+            getAllBlogs={getAllBlogs}
+          />
+        ))}
     </div>
   );
 };
