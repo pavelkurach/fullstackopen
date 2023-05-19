@@ -23,11 +23,12 @@ blogsRouter.post('/', userExtractor, async (request, response) => {
 blogsRouter.delete('/:id', userExtractor, async (request, response) => {
   const blog = await Blog.findById(request.params.id);
   if (!blog) {
-    response.status(204).end();
+    return response.status(204).end();
   }
   const user = request.user;
+  console.log(user);
   if (blog.user.toString() !== user._id.toString()) {
-    response.status(401).json({ error: 'token invalid' });
+    return response.status(401).json({ error: 'token invalid' });
   }
   user.blogs = user.blogs.filter(b => b.id !== request.params.id);
   await Blog.findByIdAndRemove(request.params.id);
