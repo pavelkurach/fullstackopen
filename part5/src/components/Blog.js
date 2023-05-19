@@ -3,7 +3,6 @@ import blogService from '../services/blogs';
 
 const Blog = ({ blog, token, getAllBlogs, username }) => {
   const [detailsVisible, setDetailsVisible] = useState(false);
-  const showWhenVisible = { display: detailsVisible ? '' : 'none' };
 
   const handleLike = async () => {
     const newBlog = { likes: blog.likes + 1 };
@@ -24,23 +23,26 @@ const Blog = ({ blog, token, getAllBlogs, username }) => {
     </div>
   );
 
+  const blogDetails = () => (
+    <div>
+      <div>
+        <a href={blog.url}>{blog.url}</a>
+      </div>
+      <div>
+        likes {blog.likes} <button onClick={handleLike}>like</button>
+      </div>
+      <div>{blog.user.name}</div>
+      {blog.user.username === username && deleteButton()}
+    </div>
+  );
+
   return (
-    <div style={{ border: '1px solid black', margin: '2px' }}>
-      {blog.title}{' '}
+    <div style={{ border: '1px solid black', margin: '2px' }} className='blog'>
+      {blog.title} {blog.author}{' '}
       <button onClick={() => setDetailsVisible(!detailsVisible)}>
         {detailsVisible ? 'hide' : 'view'}
       </button>
-      <div style={showWhenVisible}>
-        <div>{blog.author}</div>
-        <div>
-          <a href={blog.url}>{blog.url}</a>
-        </div>
-        <div>
-          likes {blog.likes} <button onClick={handleLike}>like</button>
-        </div>
-        <div>{blog.user.name}</div>
-        {blog.user.username === username && deleteButton()}
-      </div>
+      {detailsVisible && blogDetails()}
     </div>
   );
 };
