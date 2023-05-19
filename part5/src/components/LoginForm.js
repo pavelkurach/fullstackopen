@@ -12,13 +12,23 @@ export default function LoginForm({
       <div>
         <label>
           username:
-          <input type='text' value={username} onChange={setUsername} />
+          <input
+            type='text'
+            value={username}
+            onChange={setUsername}
+            id='username'
+          />
         </label>
       </div>
       <div>
         <label>
           password:{' '}
-          <input type='password' value={password} onChange={setPassword} />
+          <input
+            type='password'
+            value={password}
+            onChange={setPassword}
+            id='password'
+          />
         </label>
       </div>
       <button type='submit' id='login-button'>

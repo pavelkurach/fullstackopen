@@ -7,6 +7,7 @@ describe('Blog app', function () {
       username: 'testuser',
       password: 'password123',
     };
+
     cy.request('POST', 'http://localhost:3003/api/users/', user);
     cy.visit('http://localhost:3000');
   });
@@ -23,7 +24,7 @@ describe('Blog app', function () {
       cy.get('#password').type('password123');
       cy.get('#login-button').click();
 
-      cy.contains('Test User logged in');
+      cy.contains('Test User is logged in.');
     });
 
     it('fails with wrong credentials', function () {
@@ -34,6 +35,30 @@ describe('Blog app', function () {
       cy.get('.error')
         .should('contain', 'Wrong credentials')
         .and('have.css', 'color', 'rgb(255, 0, 0)');
+    });
+  });
+
+  describe('When logged in', function () {
+    beforeEach(function () {
+      cy.request('POST', 'http://localhost:3003/api/login', {
+        username: 'testuser',
+        password: 'password123',
+      }).then(response => {
+        localStorage.setItem(
+          'loggedBloglistAppUser',
+          JSON.stringify(response.body),
+        );
+        cy.visit('http://localhost:3000');
+      });
+    });
+
+    it('A blog can be created', function () {
+      cy.contains('new blog').click();
+      cy.get('#title').type('A new blog');
+      cy.get('#author').type('Test Author');
+      cy.get('#url').type('http://testurl.com');
+      cy.get('#create-button').click();
+      cy.contains('A new blog Test Author');
     });
   });
 });
