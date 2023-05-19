@@ -7,5 +7,6 @@ describe('Blog app', function () {
   it('Login form is shown', function () {
     cy.contains('username:');
     cy.contains('password');
+    cy.contains('Login');
   });
 });
