@@ -97,6 +97,20 @@ const App = () => {
       />
     </Toggable>
   );
+
+  const handleLike = async blog => {
+    const newBlog = { likes: blog.likes + 1 };
+    await blogService.update(blog.id, newBlog, user.token);
+    getAllBlogs();
+  };
+
+  const handleDelete = async blog => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      await blogService.deleteBlog(blog.id, user.token);
+      getAllBlogs();
+    }
+  };
+
   return (
     <div>
       <Notification
@@ -113,8 +127,8 @@ const App = () => {
             <Blog
               key={blog.id}
               blog={blog}
-              token={user.token}
-              getAllBlogs={getAllBlogs}
+              handleLike={() => handleLike(blog)}
+              handleDelete={() => handleDelete(blog)}
               username={user.username}
             />
           ))}

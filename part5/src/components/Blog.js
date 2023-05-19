@@ -1,21 +1,7 @@
 import { useState } from 'react';
-import blogService from '../services/blogs';
 
-const Blog = ({ blog, token, getAllBlogs, username }) => {
+const Blog = ({ blog, handleLike, handleDelete, username }) => {
   const [detailsVisible, setDetailsVisible] = useState(false);
-
-  const handleLike = async () => {
-    const newBlog = { likes: blog.likes + 1 };
-    await blogService.update(blog.id, newBlog, token);
-    getAllBlogs();
-  };
-
-  const handleDelete = async () => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      await blogService.deleteBlog(blog.id, token);
-      getAllBlogs();
-    }
-  };
 
   const deleteButton = () => (
     <div>

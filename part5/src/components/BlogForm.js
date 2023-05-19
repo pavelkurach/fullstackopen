@@ -15,7 +15,7 @@ const BlogForm = ({ token, showNotification, toggableRef, getAllBlogs }) => {
         `A new blog ${newBlog.title} by ${newBlog.author} is added`,
         notificationStatus.SUCCESS,
       );
-      await getAllBlogs();
+      getAllBlogs();
     } catch (e) {
       showNotification('Error', notificationStatus.ERROR);
       console.error(e);
