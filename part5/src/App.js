@@ -115,6 +115,7 @@ const App = () => {
               blog={blog}
               token={user.token}
               getAllBlogs={getAllBlogs}
+              username={user.username}
             />
           ))}
     </div>
