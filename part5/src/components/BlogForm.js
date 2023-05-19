@@ -1,8 +1,12 @@
 import { useState } from 'react';
-import blogService from '../services/blogs';
 import { notificationStatus } from './Notification';
 
-const BlogForm = ({ token, showNotification, toggableRef, getAllBlogs }) => {
+const BlogForm = ({
+  createBlog,
+  showNotification,
+  toggableRef,
+  getAllBlogs,
+}) => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
@@ -10,7 +14,7 @@ const BlogForm = ({ token, showNotification, toggableRef, getAllBlogs }) => {
   const handleBlogFormSubmit = async event => {
     event.preventDefault();
     try {
-      const newBlog = await blogService.create({ title, author, url }, token);
+      const newBlog = await createBlog({ title, author, url });
       showNotification(
         `A new blog ${newBlog.title} by ${newBlog.author} is added`,
         notificationStatus.SUCCESS,
@@ -33,6 +37,7 @@ const BlogForm = ({ token, showNotification, toggableRef, getAllBlogs }) => {
         <label onSubmit={handleBlogFormSubmit}>
           title:
           <input
+            id='title'
             type='text'
             value={title}
             onChange={({ target }) => setTitle(target.value)}
@@ -43,6 +48,7 @@ const BlogForm = ({ token, showNotification, toggableRef, getAllBlogs }) => {
         <label>
           author:
           <input
+            id='author'
             type='text'
             value={author}
             onChange={({ target }) => setAuthor(target.value)}
@@ -53,6 +59,7 @@ const BlogForm = ({ token, showNotification, toggableRef, getAllBlogs }) => {
         <label>
           url:
           <input
+            id='url'
             type='text'
             value={url}
             onChange={({ target }) => setUrl(target.value)}

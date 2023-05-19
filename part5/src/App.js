@@ -90,7 +90,9 @@ const App = () => {
   const blogForm = () => (
     <Toggable buttonLabel={'new blog'} ref={blogFormRef}>
       <BlogForm
-        token={user.token}
+        createBlog={async ({ title, author, url }) =>
+          await blogService.create({ title, author, url }, user.token)
+        }
         showNotification={showNotification}
         toggableRef={blogFormRef}
         getAllBlogs={getAllBlogs}
