@@ -2,13 +2,20 @@ describe('Blog app', function () {
   beforeEach(function () {
     cy.request('POST', 'http://localhost:3003/api/testing/reset');
 
-    const user = {
+    const user1 = {
       name: 'Test User',
       username: 'testuser',
       password: 'password123',
     };
+    cy.request('POST', 'http://localhost:3003/api/users/', user1);
 
-    cy.request('POST', 'http://localhost:3003/api/users/', user);
+    const user2 = {
+      name: 'Test User 2',
+      username: 'testuser2',
+      password: 'password1234',
+    };
+    cy.request('POST', 'http://localhost:3003/api/users/', user2);
+
     cy.visit('http://localhost:3000');
   });
 
@@ -69,6 +76,7 @@ describe('Blog app', function () {
         cy.get('#url').type('http://testurl.com');
         cy.get('#create-button').click();
       });
+
       it('user can like a blog', function () {
         cy.get('#view-button').click();
         cy.get('#likes').should('contain', 'likes 0');
@@ -78,6 +86,12 @@ describe('Blog app', function () {
         cy.get('#like-button').click();
         cy.wait(1000);
         cy.get('#likes').should('contain', 'likes 2');
+      });
+
+      it('user can delete a blog', function () {
+        cy.get('#view-button').click();
+        cy.get('#delete-button').click();
+        cy.get('.blog').should('not.exist');
       });
     });
   });

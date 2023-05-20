@@ -5,7 +5,9 @@ const Blog = ({ blog, handleLike, handleDelete, username }) => {
 
   const deleteButton = () => (
     <div>
-      <button onClick={handleDelete}>delete</button>
+      <button onClick={handleDelete} id='delete-button'>
+        delete
+      </button>
     </div>
   );
 
