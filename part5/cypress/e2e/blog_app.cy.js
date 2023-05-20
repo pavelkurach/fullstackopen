@@ -93,6 +93,17 @@ describe('Blog app', function () {
         cy.get('#delete-button').click();
         cy.get('.blog').should('not.exist');
       });
+
+      it('blog cannot be deleted by a user who is not its creator', function () {
+        cy.get('#logout-button').click();
+        cy.get('#username').type('testuser2');
+        cy.get('#password').type('password1234');
+        cy.get('#login-button').click();
+        cy.contains('Test User 2 is logged in.');
+
+        cy.get('#view-button').click();
+        cy.get('#delete-button').should('not.exist');
+      });
     });
   });
 });
