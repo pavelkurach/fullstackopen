@@ -52,13 +52,33 @@ describe('Blog app', function () {
       });
     });
 
-    it('A blog can be created', function () {
+    it('a blog can be created', function () {
       cy.contains('new blog').click();
       cy.get('#title').type('A new blog');
       cy.get('#author').type('Test Author');
       cy.get('#url').type('http://testurl.com');
       cy.get('#create-button').click();
       cy.contains('A new blog Test Author');
+    });
+
+    describe('When logged in and one blog is created', function () {
+      this.beforeEach(function () {
+        cy.contains('new blog').click();
+        cy.get('#title').type('A new blog');
+        cy.get('#author').type('Test Author');
+        cy.get('#url').type('http://testurl.com');
+        cy.get('#create-button').click();
+      });
+      it('user can like a blog', function () {
+        cy.get('#view-button').click();
+        cy.get('#likes').should('contain', 'likes 0');
+        cy.get('#like-button').click();
+        cy.wait(1000);
+        cy.get('#likes').should('contain', 'likes 1');
+        cy.get('#like-button').click();
+        cy.wait(1000);
+        cy.get('#likes').should('contain', 'likes 2');
+      });
     });
   });
 });

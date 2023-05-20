@@ -14,8 +14,11 @@ const Blog = ({ blog, handleLike, handleDelete, username }) => {
       <div>
         <a href={blog.url}>{blog.url}</a>
       </div>
-      <div>
-        likes {blog.likes} <button onClick={handleLike}>like</button>
+      <div id='likes'>
+        likes {blog.likes}{' '}
+        <button onClick={handleLike} id='like-button'>
+          like
+        </button>
       </div>
       <div>{blog.user.name}</div>
       {blog.user.username === username && deleteButton()}
@@ -25,7 +28,10 @@ const Blog = ({ blog, handleLike, handleDelete, username }) => {
   return (
     <div style={{ border: '1px solid black', margin: '2px' }} className='blog'>
       {blog.title} {blog.author}{' '}
-      <button onClick={() => setDetailsVisible(!detailsVisible)}>
+      <button
+        onClick={() => setDetailsVisible(!detailsVisible)}
+        id='view-button'
+      >
         {detailsVisible ? 'hide' : 'view'}
       </button>
       {detailsVisible && blogDetails()}
