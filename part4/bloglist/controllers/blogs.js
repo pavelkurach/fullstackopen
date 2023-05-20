@@ -26,7 +26,6 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
     return response.status(204).end();
   }
   const user = request.user;
-  console.log(user);
   if (blog.user.toString() !== user._id.toString()) {
     return response.status(401).json({ error: 'token invalid' });
   }
