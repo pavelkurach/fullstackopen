@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { addAnectode } from '../reducers/anecdoteReducer';
+import { addAnectode } from '../reducers/anecdotesReducer';
 
 const AnectodeForm = () => {
   const dispatch = useDispatch();
