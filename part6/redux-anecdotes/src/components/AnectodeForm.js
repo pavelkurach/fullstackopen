@@ -7,6 +7,13 @@ const AnectodeForm = () => {
     event.preventDefault();
     const anecdote = event.target.anecdote.value;
     dispatch({ type: 'anecdotes/addAnecdote', payload: anecdote });
+    dispatch({
+      type: 'notification/setNotification',
+      payload: `You added new anecdote: ${anecdote}`,
+    });
+    setTimeout(() => {
+      dispatch({ type: 'notification/setNotification', payload: '' });
+    }, 5000);
   };
 
   return (

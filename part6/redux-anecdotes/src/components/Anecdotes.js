@@ -5,6 +5,21 @@ const Anecdotes = () => {
   const filter = useSelector((state) => state.filter);
   const dispatch = useDispatch();
 
+  const handleVote = (id) => {
+    dispatch({
+      type: 'anecdotes/vote',
+      payload: id,
+    });
+    const anecdote = anecdotes.find((anecdote) => anecdote.id === id);
+    dispatch({
+      type: 'notification/setNotification',
+      payload: `You voted for: ${anecdote.content}`,
+    });
+    setTimeout(() => {
+      dispatch({ type: 'notification/setNotification', payload: '' });
+    }, 5000);
+  };
+
   return (
     <div>
       {anecdotes
@@ -15,16 +30,7 @@ const Anecdotes = () => {
             <div>{anecdote.content}</div>
             <div>
               has {anecdote.votes}
-              <button
-                onClick={() =>
-                  dispatch({
-                    type: 'anecdotes/vote',
-                    payload: anecdote.id,
-                  })
-                }
-              >
-                vote
-              </button>
+              <button onClick={() => handleVote(anecdote.id)}>vote</button>
             </div>
           </div>
         ))}
