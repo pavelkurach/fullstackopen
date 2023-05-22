@@ -3,10 +3,10 @@ import anecdoteReducer from './reducers/anecdotesReducer';
 import filterReducer from './reducers/filterReducer';
 
 const store = configureStore({
-                               reducer: {
-                                 anecdotes: anecdoteReducer,
-                                 filter   : filterReducer,
-                               }
-                             });
+  reducer: {
+    anecdotes: anecdoteReducer,
+    filter: filterReducer,
+  },
+});
 
 export default store;

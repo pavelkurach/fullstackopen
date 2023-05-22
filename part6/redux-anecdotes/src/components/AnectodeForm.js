@@ -1,13 +1,12 @@
 import { useDispatch } from 'react-redux';
-import { addAnectode } from '../reducers/anecdotesReducer';
 
 const AnectodeForm = () => {
   const dispatch = useDispatch();
 
-  const handleNewAnecdoteSubmit = event => {
+  const handleNewAnecdoteSubmit = (event) => {
     event.preventDefault();
     const anecdote = event.target.anecdote.value;
-    dispatch(addAnectode(anecdote));
+    dispatch({ type: 'anecdotes/addAnecdote', payload: anecdote });
   };
 
   return (
@@ -15,9 +14,9 @@ const AnectodeForm = () => {
       <h2>create new</h2>
       <form onSubmit={handleNewAnecdoteSubmit}>
         <div>
-          <input type='text' name='anecdote' />
+          <input type="text" name="anecdote" />
         </div>
-        <button type='submit'>create</button>
+        <button type="submit">create</button>
       </form>
     </div>
   );
