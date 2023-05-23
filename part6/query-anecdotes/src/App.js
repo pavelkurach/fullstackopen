@@ -2,11 +2,15 @@ import AnecdoteForm from './components/AnecdoteForm';
 import Notification from './components/Notification';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import anecdotesService from './services/anecdotes';
+import { useSetNotification } from './NotificationContext';
 
 const App = () => {
+  const setNotification = useSetNotification();
+
   const queryClient = useQueryClient();
   const voteMutation = useMutation(anecdotesService.vote, {
     onSuccess: (updatedAnecdote) => {
+      setNotification(`you voted '${updatedAnecdote.content}'`);
       const anecdotes = queryClient.getQueryData('anecdotes');
       const updatedAnecdotes = anecdotes.map((anecdote) =>
         anecdote.id === updatedAnecdote.id ? updatedAnecdote : anecdote
