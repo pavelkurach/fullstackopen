@@ -64,3 +64,10 @@ export const initializeAnecdotes = () => {
     dispatch(setAnecdotes(anecdotes));
   };
 };
+
+export const voteAnecdote = (id) => {
+  return async (dispatch) => {
+    const votedAnecdote = await anecdoteService.vote(id);
+    dispatch(vote(votedAnecdote.id));
+  };
+};
