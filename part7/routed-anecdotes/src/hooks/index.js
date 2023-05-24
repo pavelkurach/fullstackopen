@@ -12,9 +12,11 @@ export const useField = (name) => {
   };
 
   return {
-    name,
-    value,
-    onChange,
+    input: {
+      name,
+      value,
+      onChange,
+    },
     reset,
   };
 };
@@ -31,9 +33,9 @@ export const useCreateAnecdote = () => {
   };
 
   return {
-    content,
-    author,
-    info,
+    content: content.input,
+    author: author.input,
+    info: info.input,
     reset,
   };
 };
