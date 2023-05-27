@@ -29,7 +29,8 @@ blogsRouter.delete('/:id', userExtractor, async (request, response) => {
   if (blog.user.toString() !== user._id.toString()) {
     return response.status(401).json({ error: 'token invalid' });
   }
-  user.blogs = user.blogs.filter(b => b.id !== request.params.id);
+  user.blogs = user.blogs.filter(b => b.toString() !== request.params.id.toString());
+  user.save();
   await Blog.findByIdAndRemove(request.params.id);
   response.status(204).end();
 });
@@ -44,16 +45,16 @@ blogsRouter.put('/:id', userExtractor, async (request, response) => {
       {
         new: true,
         runValidators: true,
-        context: 'query',
-      },
+        context: 'query'
+      }
     );
     response.status(200).json(updatedBlog);
   } else {
     const blog = new Blog({
-      _id: request.params.id,
-      ...request.body,
-      user: user._id,
-    });
+                            _id: request.params.id,
+                            ...request.body,
+                            user: user._id
+                          });
     const savedBlog = await blog.save();
     user.blogs = user.blogs.concat(savedBlog._id);
     user.save();
