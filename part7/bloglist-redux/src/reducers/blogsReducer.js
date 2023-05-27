@@ -52,8 +52,8 @@ const deleteBlog = (id, token) => {
 const likeBlog = (blog, token) => {
   return async (dispatch) => {
     const newBlog = { likes: blog.likes + 1 };
-    await blogService.update(blog.id, newBlog, token);
     dispatch(blogsSlice.actions.likeBlog(blog.id));
+    await blogService.update(blog.id, newBlog, token);
   };
 };
 

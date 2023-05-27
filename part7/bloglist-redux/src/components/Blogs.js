@@ -4,6 +4,7 @@ import Toggable from './Toggable';
 import BlogForm from './BlogForm';
 import { createBlog, deleteBlog, likeBlog } from '../reducers/blogsReducer';
 import { useRef } from 'react';
+import { Link } from 'react-router-dom';
 
 const Blogs = () => {
   const dispatch = useDispatch();
@@ -22,16 +23,6 @@ const Blogs = () => {
     </Toggable>
   );
 
-  const handleLike = async (blog) => {
-    dispatch(likeBlog(blog, user.token));
-  };
-
-  const handleDelete = async (blog) => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      dispatch(deleteBlog(blog.id, user.token));
-    }
-  };
-
   return (
     <div>
       <h2>Blogs</h2>
@@ -40,14 +31,12 @@ const Blogs = () => {
         [...blogs]
           .sort((blog1, blog2) => blog2.likes - blog1.likes)
           .map((blog) => (
-            <Blog
+            <div
+              style={{ border: '1px solid black', margin: '2px' }}
               key={blog.id}
-              blog={blog}
-              handleLike={() => handleLike(blog)}
-              handleDelete={() => handleDelete(blog)}
-              s
-              username={user.username}
-            />
+            >
+              <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+            </div>
           ))}
     </div>
   );
