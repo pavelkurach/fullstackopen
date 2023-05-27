@@ -17,11 +17,12 @@ import {
   deleteBlog,
   likeBlog,
 } from './reducers/blogsReducer';
+import { setUser } from './reducers/userReducer';
 
 const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [user, setUser] = useState(null);
+  const user = useSelector((state) => state.user);
   const blogs = useSelector((state) => state.blogs);
 
   const dispatch = useDispatch();
@@ -31,13 +32,13 @@ const App = () => {
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistAppUser');
     if (loggedUserJSON) {
-      setUser(JSON.parse(loggedUserJSON));
+      dispatch(setUser(JSON.parse(loggedUserJSON)));
       dispatch(getAllBlogs());
     }
   }, [dispatch]);
 
   const handleLogout = () => {
-    setUser(null);
+    dispatch(setUser(null));
     window.localStorage.removeItem('loggedBloglistAppUser');
   };
 
@@ -45,7 +46,7 @@ const App = () => {
     event.preventDefault();
     try {
       const user = await loginService.login({ username, password });
-      setUser(user);
+      dispatch(setUser(user));
       window.localStorage.setItem(
         'loggedBloglistAppUser',
         JSON.stringify(user)
