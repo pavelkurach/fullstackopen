@@ -10,29 +10,26 @@ import {
 import loginService from './services/login';
 import BlogForm from './components/BlogForm';
 import Toggable from './components/Toggable';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllBlogs, createBlog } from './reducers/blogsReducer';
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
+  const blogs = useSelector((state) => state.blogs);
 
   const dispatch = useDispatch();
 
   const blogFormRef = useRef();
 
-  const getAllBlogs = () => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  };
-
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistAppUser');
     if (loggedUserJSON) {
       setUser(JSON.parse(loggedUserJSON));
-      getAllBlogs();
+      dispatch(getAllBlogs());
     }
-  }, []);
+  }, [dispatch]);
 
   const handleLogout = () => {
     setUser(null);
@@ -48,7 +45,7 @@ const App = () => {
         'loggedBloglistAppUser',
         JSON.stringify(user)
       );
-      getAllBlogs();
+      dispatch(getAllBlogs());
     } catch (e) {
       dispatch(showNotification('Wrong credentials', notificationStatus.ERROR));
       console.error(e);
@@ -82,11 +79,8 @@ const App = () => {
   const blogForm = () => (
     <Toggable buttonLabel={'new blog'} ref={blogFormRef}>
       <BlogForm
-        createBlog={async ({ title, author, url }) =>
-          await blogService.create({ title, author, url }, user.token)
-        }
         toggableRef={blogFormRef}
-        getAllBlogs={getAllBlogs}
+        createBlog={(blog) => createBlog(blog, user.token)}
       />
     </Toggable>
   );
@@ -94,13 +88,13 @@ const App = () => {
   const handleLike = async (blog) => {
     const newBlog = { likes: blog.likes + 1 };
     await blogService.update(blog.id, newBlog, user.token);
-    getAllBlogs();
+    dispatch(getAllBlogs());
   };
 
   const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       await blogService.deleteBlog(blog.id, user.token);
-      getAllBlogs();
+      dispatch(getAllBlogs());
     }
   };
 
@@ -111,7 +105,7 @@ const App = () => {
       {user === null ? loginForm() : loggedInUser()}
       {user !== null && blogForm()}
       {user !== null &&
-        blogs
+        [...blogs]
           .sort((blog1, blog2) => blog2.likes - blog1.likes)
           .map((blog) => (
             <Blog

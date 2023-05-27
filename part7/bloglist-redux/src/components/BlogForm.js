@@ -4,8 +4,9 @@ import {
   showNotification,
 } from '../reducers/notificationReducer';
 import { useDispatch } from 'react-redux';
+import { getAllBlogs } from '../reducers/blogsReducer';
 
-const BlogForm = ({ createBlog, toggableRef, getAllBlogs }) => {
+const BlogForm = ({ toggableRef, createBlog }) => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
@@ -14,14 +15,13 @@ const BlogForm = ({ createBlog, toggableRef, getAllBlogs }) => {
   const handleBlogFormSubmit = async (event) => {
     event.preventDefault();
     try {
-      const newBlog = await createBlog({ title, author, url });
+      dispatch(createBlog({ title, author, url }));
       dispatch(
         showNotification(
-          `A new blog ${newBlog.title} by ${newBlog.author} is added`,
+          `A new blog ${title} by ${author} is added`,
           notificationStatus.SUCCESS
         )
       );
-      getAllBlogs();
     } catch (e) {
       dispatch(showNotification('Error', notificationStatus.ERROR));
       console.error(e);
