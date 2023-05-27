@@ -76,19 +76,45 @@ const App = () => {
 
   const loggedInUser = () => {
     return (
-      <div>
+      <span>
         {user.name} is logged in.
         <button onClick={handleLogout} id="logout-button">
           logout
         </button>
+      </span>
+    );
+  };
+
+  const navigationMenu = () => {
+    const padding = {
+      paddingRight: 5,
+    };
+    return (
+      <div>
+        <Link style={padding} to="/">
+          blogs
+        </Link>
+        <Link style={padding} to="/users">
+          users
+        </Link>
+        {loggedInUser()}
       </div>
     );
   };
 
+  if (user === null) {
+    return (
+      <div>
+        <Notification />
+        {loginForm()}
+      </div>
+    );
+  }
+
   return (
     <Router>
+      {navigationMenu()}
       <Notification />
-      {user === null ? loginForm() : loggedInUser()}
       <Routes>
         <Route path="/" element={<Blogs />} />
         <Route path="/users" element={<Users />} />
