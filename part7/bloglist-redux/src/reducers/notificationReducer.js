@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const notificationStatus = {
   SUCCESS: 'success',
-  ERROR: 'error',
+  ERROR: 'danger',
 };
 
 const notificationSlice = createSlice({

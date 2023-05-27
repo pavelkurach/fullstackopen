@@ -22,6 +22,7 @@ import { getAllUsers } from './reducers/usersReducer';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Blogs from './components/Blogs';
 import User from './components/User';
+import { Button, Navbar, Nav } from 'react-bootstrap';
 
 const App = () => {
   const [username, setUsername] = useState('');
@@ -76,11 +77,11 @@ const App = () => {
 
   const loggedInUser = () => {
     return (
-      <span>
-        {user.name} is logged in.
-        <button onClick={handleLogout} id="logout-button">
+      <span style={{ color: 'white' }}>
+        {user.name} is logged in.{' '}
+        <Button onClick={handleLogout} id="logout-button">
           logout
-        </button>
+        </Button>
       </span>
     );
   };
@@ -90,21 +91,29 @@ const App = () => {
       paddingRight: 5,
     };
     return (
-      <div>
-        <Link style={padding} to="/">
-          blogs
-        </Link>
-        <Link style={padding} to="/users">
-          users
-        </Link>
+      <Navbar bg="dark">
+        <Nav>
+          <Nav.Link href="#" as="span">
+            <Link style={padding} to="/">
+              blogs
+            </Link>
+          </Nav.Link>
+        </Nav>
+        <Nav>
+          <Nav.Link href="#" as="span">
+            <Link style={padding} to="/users">
+              users
+            </Link>
+          </Nav.Link>
+        </Nav>
         {loggedInUser()}
-      </div>
+      </Navbar>
     );
   };
 
   if (user === null) {
     return (
-      <div>
+      <div style={{ marginTop: '50px' }} className="container">
         <Notification />
         {loginForm()}
       </div>
@@ -112,16 +121,18 @@ const App = () => {
   }
 
   return (
-    <Router>
-      {navigationMenu()}
-      <Notification />
-      <Routes>
-        <Route path="/" element={<Blogs />} />
-        <Route path="/users" element={<Users />} />
-        <Route path="/users/:id" element={<User />} />
-        <Route path="/blogs/:id" element={<Blog />} />
-      </Routes>
-    </Router>
+    <div className="container" style={{ marginTop: '10px' }}>
+      <Router>
+        {navigationMenu()}
+        <Notification />
+        <Routes>
+          <Route path="/" element={<Blogs />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/users/:id" element={<User />} />
+          <Route path="/blogs/:id" element={<Blog />} />
+        </Routes>
+      </Router>
+    </div>
   );
 };
 

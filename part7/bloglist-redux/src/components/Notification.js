@@ -1,5 +1,6 @@
 import { notificationStatus } from '../reducers/notificationReducer';
 import { useSelector } from 'react-redux';
+import { Alert } from 'react-bootstrap';
 
 function Notification() {
   const { message, status } = useSelector((state) => state.notification);
@@ -8,28 +9,11 @@ function Notification() {
     return null;
   }
 
-  let color;
-
-  if (status === notificationStatus.SUCCESS) {
-    color = 'green';
-  } else if (status === notificationStatus.ERROR) {
-    color = 'red';
-  }
-
-  const style = {
-    fontSize: 16,
-    color,
-    backgroundColor: 'lightgrey',
-    padding: '8px',
-    border: `2px solid ${color}`,
-    borderRadius: '8px',
-  };
-
   return (
     <>
-      <div style={style} className={status}>
+      <Alert variant={status} className={status}>
         {message}
-      </div>
+      </Alert>
       <br />
     </>
   );

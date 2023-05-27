@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { Form, Button, FormGroup } from 'react-bootstrap';
 
 export default function LoginForm({
   username,
@@ -8,33 +9,38 @@ export default function LoginForm({
   handleLogin,
 }) {
   return (
-    <form onSubmit={handleLogin}>
-      <div>
-        <label>
-          username:
-          <input
-            type='text'
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <Form onSubmit={handleLogin}>
+        <Form.Group>
+          <Form.Label>username:</Form.Label>
+          <Form.Control
+            type="text"
             value={username}
             onChange={setUsername}
-            id='username'
+            id="username"
           />
-        </label>
-      </div>
-      <div>
-        <label>
-          password:{' '}
-          <input
-            type='password'
+
+          <Form.Label>password:</Form.Label>
+          <Form.Control
+            type="password"
             value={password}
             onChange={setPassword}
-            id='password'
+            id="password"
           />
-        </label>
-      </div>
-      <button type='submit' id='login-button'>
-        Login
-      </button>
-    </form>
+          <br />
+          <Button variant="primary" type="submit" id="login-button">
+            Login
+          </Button>
+        </Form.Group>
+      </Form>
+    </div>
   );
 }
 

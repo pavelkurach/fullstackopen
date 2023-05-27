@@ -5,6 +5,7 @@ import {
 } from '../reducers/notificationReducer';
 import { useDispatch } from 'react-redux';
 import { getAllBlogs } from '../reducers/blogsReducer';
+import { Button, Form } from 'react-bootstrap';
 
 const BlogForm = ({ toggableRef, createBlog }) => {
   const [title, setTitle] = useState('');
@@ -69,9 +70,10 @@ const BlogForm = ({ toggableRef, createBlog }) => {
         </label>
       </div>
       <div>
-        <button type="submit" id="create-button">
+        <br />
+        <Button type="submit" id="create-button">
           create
-        </button>
+        </Button>
       </div>
     </form>
   );
