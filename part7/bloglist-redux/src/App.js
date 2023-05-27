@@ -11,7 +11,12 @@ import loginService from './services/login';
 import BlogForm from './components/BlogForm';
 import Toggable from './components/Toggable';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllBlogs, createBlog } from './reducers/blogsReducer';
+import {
+  getAllBlogs,
+  createBlog,
+  deleteBlog,
+  likeBlog,
+} from './reducers/blogsReducer';
 
 const App = () => {
   const [username, setUsername] = useState('');
@@ -86,15 +91,12 @@ const App = () => {
   );
 
   const handleLike = async (blog) => {
-    const newBlog = { likes: blog.likes + 1 };
-    await blogService.update(blog.id, newBlog, user.token);
-    dispatch(getAllBlogs());
+    dispatch(likeBlog(blog, user.token));
   };
 
   const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      await blogService.deleteBlog(blog.id, user.token);
-      dispatch(getAllBlogs());
+      dispatch(deleteBlog(blog.id, user.token));
     }
   };
 
