@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Blog from './components/Blog';
 import LoginForm from './components/LoginForm';
-import blogService from './services/blogs';
 import { Notification } from './components/Notification';
 import {
   notificationStatus,
@@ -12,12 +11,16 @@ import BlogForm from './components/BlogForm';
 import Toggable from './components/Toggable';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  getAllBlogs,
   createBlog,
   deleteBlog,
+  getAllBlogs,
   likeBlog,
 } from './reducers/blogsReducer';
 import { setUser } from './reducers/userReducer';
+import Users from './components/Users';
+import { getAllUsers } from './reducers/usersReducer';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import Blogs from './components/Blogs';
 
 const App = () => {
   const [username, setUsername] = useState('');
@@ -27,13 +30,12 @@ const App = () => {
 
   const dispatch = useDispatch();
 
-  const blogFormRef = useRef();
-
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistAppUser');
     if (loggedUserJSON) {
       dispatch(setUser(JSON.parse(loggedUserJSON)));
       dispatch(getAllBlogs());
+      dispatch(getAllUsers());
     }
   }, [dispatch]);
 
@@ -82,44 +84,15 @@ const App = () => {
     );
   };
 
-  const blogForm = () => (
-    <Toggable buttonLabel={'new blog'} ref={blogFormRef}>
-      <BlogForm
-        toggableRef={blogFormRef}
-        createBlog={(blog) => createBlog(blog, user.token)}
-      />
-    </Toggable>
-  );
-
-  const handleLike = async (blog) => {
-    dispatch(likeBlog(blog, user.token));
-  };
-
-  const handleDelete = async (blog) => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      dispatch(deleteBlog(blog.id, user.token));
-    }
-  };
-
   return (
-    <div>
+    <Router>
       <Notification />
-      <h2>blogs</h2>
       {user === null ? loginForm() : loggedInUser()}
-      {user !== null && blogForm()}
-      {user !== null &&
-        [...blogs]
-          .sort((blog1, blog2) => blog2.likes - blog1.likes)
-          .map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              handleLike={() => handleLike(blog)}
-              handleDelete={() => handleDelete(blog)}
-              username={user.username}
-            />
-          ))}
-    </div>
+      <Routes>
+        <Route path="/" element={<Blogs />} />
+        <Route path="/users" element={<Users />} />
+      </Routes>
+    </Router>
   );
 };
 
