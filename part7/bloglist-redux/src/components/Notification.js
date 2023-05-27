@@ -1,10 +1,10 @@
-const notificationStatus = {
-  SUCCESS: 'success',
-  ERROR: 'error',
-};
+import { notificationStatus } from '../reducers/notificationReducer';
+import { useSelector } from 'react-redux';
 
-function Notification({ message, status }) {
-  if (!message) {
+function Notification() {
+  const { message, status } = useSelector((state) => state.notification);
+
+  if (message === '') {
     return null;
   }
 
@@ -35,4 +35,4 @@ function Notification({ message, status }) {
   );
 }
 
-export { Notification, notificationStatus };
+export { Notification };

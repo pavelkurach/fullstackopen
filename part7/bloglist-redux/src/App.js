@@ -2,38 +2,28 @@ import { useEffect, useRef, useState } from 'react';
 import Blog from './components/Blog';
 import LoginForm from './components/LoginForm';
 import blogService from './services/blogs';
-import { Notification, notificationStatus } from './components/Notification';
+import { Notification } from './components/Notification';
+import {
+  notificationStatus,
+  showNotification,
+} from './reducers/notificationReducer';
 import loginService from './services/login';
 import BlogForm from './components/BlogForm';
 import Toggable from './components/Toggable';
+import { useDispatch } from 'react-redux';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [notification, setNotification] = useState({
-    message: null,
-    status: null,
-  });
   const [user, setUser] = useState(null);
+
+  const dispatch = useDispatch();
 
   const blogFormRef = useRef();
 
-  const showNotification = (message, status) => {
-    setNotification({
-      message,
-      status,
-    });
-    setTimeout(() => {
-      setNotification({
-        message: null,
-        status: null,
-      });
-    }, 2000);
-  };
-
   const getAllBlogs = () => {
-    blogService.getAll().then(blogs => setBlogs(blogs));
+    blogService.getAll().then((blogs) => setBlogs(blogs));
   };
 
   useEffect(() => {
@@ -49,18 +39,18 @@ const App = () => {
     window.localStorage.removeItem('loggedBloglistAppUser');
   };
 
-  const handleLogin = async event => {
+  const handleLogin = async (event) => {
     event.preventDefault();
     try {
       const user = await loginService.login({ username, password });
       setUser(user);
       window.localStorage.setItem(
         'loggedBloglistAppUser',
-        JSON.stringify(user),
+        JSON.stringify(user)
       );
       getAllBlogs();
     } catch (e) {
-      showNotification('Wrong credentials', notificationStatus.ERROR);
+      dispatch(showNotification('Wrong credentials', notificationStatus.ERROR));
       console.error(e);
     } finally {
       setUsername('');
@@ -82,7 +72,7 @@ const App = () => {
     return (
       <div>
         {user.name} is logged in.
-        <button onClick={handleLogout} id='logout-button'>
+        <button onClick={handleLogout} id="logout-button">
           logout
         </button>
       </div>
@@ -95,20 +85,19 @@ const App = () => {
         createBlog={async ({ title, author, url }) =>
           await blogService.create({ title, author, url }, user.token)
         }
-        showNotification={showNotification}
         toggableRef={blogFormRef}
         getAllBlogs={getAllBlogs}
       />
     </Toggable>
   );
 
-  const handleLike = async blog => {
+  const handleLike = async (blog) => {
     const newBlog = { likes: blog.likes + 1 };
     await blogService.update(blog.id, newBlog, user.token);
     getAllBlogs();
   };
 
-  const handleDelete = async blog => {
+  const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       await blogService.deleteBlog(blog.id, user.token);
       getAllBlogs();
@@ -117,17 +106,14 @@ const App = () => {
 
   return (
     <div>
-      <Notification
-        message={notification.message}
-        status={notification.status}
-      />
+      <Notification />
       <h2>blogs</h2>
       {user === null ? loginForm() : loggedInUser()}
       {user !== null && blogForm()}
       {user !== null &&
         blogs
           .sort((blog1, blog2) => blog2.likes - blog1.likes)
-          .map(blog => (
+          .map((blog) => (
             <Blog
               key={blog.id}
               blog={blog}
