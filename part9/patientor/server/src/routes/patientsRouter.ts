@@ -8,4 +8,10 @@ patientsRouter.get('/', (_req, res) => {
   res.json(patientsSafe);
 });
 
+patientsRouter.post('/', (req, res) => {
+  const patientToAdd: unknown = req.body;
+  const newPatient = patientsService.addNewPatient(patientToAdd);
+  res.json(newPatient);
+});
+
 export default patientsRouter;
