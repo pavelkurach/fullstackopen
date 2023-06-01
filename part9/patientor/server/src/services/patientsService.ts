@@ -1,4 +1,9 @@
-import { NewPatient, Patient, PatientSafe } from '../types/patientType';
+import {
+  Gender,
+  NewPatient,
+  Patient,
+  PatientSafe
+} from '../types/patientType';
 import { v1 as uuid } from 'uuid';
 import patientsData from '../../data/patients';
 
@@ -42,8 +47,15 @@ const parseSSN = (ssn: unknown): string => {
   return ssn;
 };
 
-const parseGender = (gender: unknown): string => {
-  if (!gender || !isString(gender)) {
+const isGender = (gender: unknown): gender is Gender => {
+  if (!isString(gender)) {
+    return false;
+  }
+  return Object.values(Gender).map(v => v.toString()).includes(gender);
+};
+
+const parseGender = (gender: unknown): Gender => {
+  if (!gender || !isGender(gender)) {
     throw new Error('Incorrect or missing gender');
   }
   return gender;
@@ -78,9 +90,9 @@ const toNewPatientEntry = (object: unknown): NewPatient => {
 };
 
 const addNewPatient = (object: unknown): Patient => {
-  const newPatient =  {
+  const newPatient = {
     ...toNewPatientEntry(object),
-    id: uuid(),
+    id: uuid()
   };
   patientsData.push(newPatient);
   return newPatient;
