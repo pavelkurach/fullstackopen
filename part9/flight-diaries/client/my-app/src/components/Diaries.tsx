@@ -24,6 +24,7 @@ const Diaries = () => {
 
   return (
     <div>
+      <h2>Diary entries</h2>
       {diaries.map(diary => {
         return (
           <div key={diary.id}>

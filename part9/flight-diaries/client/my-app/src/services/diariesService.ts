@@ -8,4 +8,10 @@ const getAllEntries = async (): Promise<Diary[]> => {
   return diaries.data.map((obj: unknown) => parseDiary(obj));
 };
 
-export default { getAllEntries };
+const addNewDiary = async (newDiary: unknown): Promise<Diary> => {
+  const response = await axios.post(baseUrl, newDiary);
+  const createdDiary = parseDiary(response.data)
+  return createdDiary
+}
+
+export default { getAllEntries, addNewDiary };

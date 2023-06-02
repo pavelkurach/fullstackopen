@@ -82,6 +82,12 @@ export const parseDiary = (object: unknown): Diary => {
   throw new Error('Incorrect data: some fields are missing');
 };
 
+export interface NewDiary {
+  date: string,
+  weather: Weather,
+  visibility: Visibility,
+  comment: string,
+}
 
 
 
