@@ -4,15 +4,19 @@ import { Patient } from '../types';
 import { useEffect, useState } from 'react';
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
+import {Diagnosis} from '../types';
+import diagnosesService from '../services/diagnoses'
 
 const PatientComponent = () => {
   const id = useParams().id as string;
   const [patient, setPatient] = useState<Patient>();
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([])
 
   useEffect(() => {
     patientsService.getById(id).then(patient => {
       setPatient(patient);
     });
+    diagnosesService.getAll().then(diagnoses => setDiagnoses(diagnoses))
   });
 
   if (typeof patient === 'undefined') {
@@ -39,12 +43,12 @@ const PatientComponent = () => {
       <h2>Entries</h2>
       {patient.entries.map(entry => {
         return (
-          <div>
+          <div key={entry.id}>
             <i>{entry.date}</i> {entry.description}
             <ul>
               {entry.diagnosisCodes && entry.diagnosisCodes.map(code => {
                 return (
-                  <li key={code}>{code}</li>
+                  <li key={code}>{code} {diagnoses.find(d => d.code === code)?.name}</li>
                 )
               })}
             </ul>
