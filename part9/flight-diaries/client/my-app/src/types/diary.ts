@@ -39,8 +39,8 @@ const isWeather = (weather: unknown): weather is Weather => {
   if (!weather || !isString(weather)) {
     return false;
   }
-  return Object.values(Weather).map(w => w.toString()).includes(weather)
-}
+  return Object.values(Weather).map(w => w.toString()).includes(weather);
+};
 
 const parseWeather = (weather: unknown): Weather => {
   if (!isWeather(weather)) {
@@ -53,8 +53,8 @@ const isVisibility = (visibility: unknown): visibility is Visibility => {
   if (!visibility || !isString(visibility)) {
     return false;
   }
-  return Object.values(Visibility).map(w => w.toString()).includes(visibility)
-}
+  return Object.values(Visibility).map(w => w.toString()).includes(visibility);
+};
 
 const parseVisibility = (visibility: unknown): Visibility => {
   if (!isVisibility(visibility)) {

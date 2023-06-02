@@ -1,35 +1,32 @@
-import React from 'react';
-// import { NewDiary, Visibility, Weather } from '../types/diary';
+import React, { useState } from 'react';
+import { Visibility, Weather } from '../types/diary';
 import diariesService from '../services/diariesService';
 import { useMutation, useQueryClient } from 'react-query';
 import { AxiosError } from 'axios';
-import {useState} from 'react';
 
 const resetForm = (target: EventTarget & {
   date: { value: string };
-  visibility: { value: string };
-  weather: { value: string };
+  visibility: { value: Visibility };
+  weather: { value: Weather };
   comment: { value: string }
 }) => {
   target.date.value = '';
-  //target.visibility.value = Object.values(Visibility)[0];
-  target.visibility.value = '';
-  //target.weather.value = Object.values(Weather)[0];
-  target.weather.value = '';
+  target.visibility.value = Object.values(Visibility)[0];
+  target.weather.value = Object.values(Weather)[0];
   target.comment.value = '';
-}
+};
 
 const DiaryForm = () => {
 
   const queryClient = useQueryClient();
-  const [notification, setNotification] = useState('')
+  const [notification, setNotification] = useState('');
 
   const showNotification = (newNotification: string) => {
     setNotification(newNotification);
     setTimeout(() => {
-      setNotification('')
-    }, 3000)
-  }
+      setNotification('');
+    }, 3000);
+  };
 
   const diariesMutation = useMutation(diariesService.addNewDiary, {
     onSuccess: () => {
@@ -46,8 +43,8 @@ const DiaryForm = () => {
     event.preventDefault();
     const target = event.target as EventTarget & {
       date: { value: string },
-      visibility: { value: string },
-      weather: { value: string },
+      visibility: { value: Visibility },
+      weather: { value: Weather },
       comment: { value: string },
     };
     const newDiary = {
@@ -64,40 +61,38 @@ const DiaryForm = () => {
   return (
     <div>
       <h2>Add new entry</h2>
-      <div style={{color: 'red'}}>{notification}</div>
-      <br/>
+      <div style={{ color: 'red' }}>{notification}</div>
+      <br />
       <form onSubmit={handleSubmit}>
         <label>
           date
-          <input type='text' name='date' />
+          <input type='date' name='date' />
         </label>
         <br />
         <label>
           visibility
-          <input type='text' name='visibility' />
-          {/*
-          <select name='visibility'>
+          {' '}
           {Object.values(Visibility).map(v => {
             return (
-              <option key={v} value={v}>{v}</option>
-            )
+              <label key={v}>
+                {v}
+                <input type='radio' value={v} name='visibility' />
+              </label>
+            );
           })}
-          </select>
-          */}
         </label>
         <br />
         <label>
           weather
-          <input type='text' name='weather' />
-          {/*
-          <select name='weather'>
+          {' '}
           {Object.values(Weather).map(v => {
             return (
-              <option key={v} value={v}>{v}</option>
-            )
+              <label key={v}>
+                {v}
+                <input type='radio' value={v} name='weather' />
+              </label>
+            );
           })}
-          </select>
-          */}
         </label>
         <br />
         <label>
