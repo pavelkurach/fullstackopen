@@ -1,4 +1,4 @@
-export type Diagnose = {
+export type Diagnosis = {
   code: string;
   name: string;
   latin?: string;
