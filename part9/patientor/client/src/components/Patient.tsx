@@ -6,17 +6,21 @@ import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
 import {Diagnosis} from '../types';
 import diagnosesService from '../services/diagnoses'
+import {useQuery} from 'react-query';
 
 const PatientComponent = () => {
   const id = useParams().id as string;
   const [patient, setPatient] = useState<Patient>();
-  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([])
+
+  const diagnosesQuery = useQuery('diagnoses', diagnosesService.getAll)
+  const diagnoses = diagnosesQuery.data === undefined
+    ? []
+    : diagnosesQuery.data
 
   useEffect(() => {
     patientsService.getById(id).then(patient => {
       setPatient(patient);
     });
-    diagnosesService.getAll().then(diagnoses => setDiagnoses(diagnoses))
   });
 
   if (typeof patient === 'undefined') {
