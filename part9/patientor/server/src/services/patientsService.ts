@@ -2,25 +2,29 @@ import {
   Gender,
   NewPatient,
   Patient,
-  PatientSafe
+  NonSensitivePatient
 } from '../types/patientType';
 import { v1 as uuid } from 'uuid';
 import patientsData from '../../data/patients';
 
-const convertPatientToSafe = (patient: Patient): PatientSafe => {
+const convertPatientToSafe = (patient: Patient): NonSensitivePatient => {
   const { id, name, dateOfBirth, gender, occupation } = patient;
   return {
     id,
     name,
     dateOfBirth,
     gender,
-    occupation
+    occupation,
   };
 };
 
-const getEntriesSafe = (): PatientSafe[] => {
+const getEntriesSafe = (): NonSensitivePatient[] => {
   return patientsData.map(patient => convertPatientToSafe(patient));
 };
+
+const getEntry = (id: string): Patient | undefined => {
+  return patientsData.find(p => p.id === id)
+}
 
 const isString = (text: unknown): text is string => {
   return typeof text === 'string' || text instanceof String;
@@ -82,7 +86,8 @@ const toNewPatientEntry = (object: unknown): NewPatient => {
       dateOfBirth: parseDateOfBirth(object.dateOfBirth),
       ssn: parseSSN(object.ssn),
       gender: parseGender(object.gender),
-      occupation: parseOccupation(object.occupation)
+      occupation: parseOccupation(object.occupation),
+      entries: [],
     };
     return newEntry;
   }
@@ -98,4 +103,4 @@ const addNewPatient = (object: unknown): Patient => {
   return newPatient;
 };
 
-export default { getEntriesSafe, addNewPatient };
+export default { getEntriesSafe, addNewPatient, getEntry };
